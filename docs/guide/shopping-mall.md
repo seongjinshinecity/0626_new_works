@@ -1,0 +1,29 @@
+# 가이드 — [Auth + DB] 쇼핑몰 (결제 기능제외)
+
+> 상품 목록 → 장바구니 담기 → 장바구니 관리까지. 결제 없음.
+
+## 전제
+- 튜토리얼 Sign In & Sign Up & Profile, Todo App(+Login & DB) 완료. Supabase 준비.
+
+## 미션
+- **Part 1 상품 목록**: DB 상품(상품명/가격/이미지/설명), 로그인 없이 공개
+- **Part 2 회원가입 & 로그인**: 장바구니는 로그인 필요
+- **Part 3 장바구니**: 담기 / 조회 / 수량 변경(+/-) / 삭제 / 총 금액 합계
+- **Part 4 배포**: Vercel
+
+## 핵심 구조
+```
+[상품 목록(DB)] → [장바구니 담기(로그인 필수)] → [내 장바구니 관리] → [합계]
+```
+DB 테이블:
+```
+products: id, name, price, image_url, description
+cart:     id, user_id, product_id, quantity
+```
+- products: 공개 · cart: 로그인 본인만
+
+## 제출물
+- 배포 URL(Vercel), GitHub 링크, 스크린샷(상품목록→담기→관리→합계)
+
+## 팁
+- 상품 데이터는 에이전트로 샘플 10개 생성, 이미지는 Unsplash. 결제는 일부러 제외("주문하기"는 "준비 중"). Todo App 구조 응용(Todo→장바구니, 체크→수량).

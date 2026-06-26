@@ -1,0 +1,27 @@
+# 비밀키 — 절대 커밋 금지
+.env
+.env.local
+.env*.local
+**/.env
+**/.env.local
+**/.env*.local
+
+# 의존성/빌드 산출물
+**/node_modules/
+**/.next/
+**/out/
+**/build/.next/
+
+# 로그/하네스 산출물
+harness/logs/
+*.log
+
+# OS
+.DS_Store
+**/.DS_Store
+
+# 스크린샷 캡처 임시(앱별 docs/screenshots는 추적)
+
+# 실제 키가 들어간 샘플 — 푸시 금지
+.env.sample
+**/.env.sample
