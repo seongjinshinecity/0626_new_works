@@ -24,14 +24,14 @@
 
 | 프로젝트 | ref | 용도 / 주의 |
 | --- | --- | --- |
-| **Todos board** | `efyjbcnioxggrcamyxov` | 사용자 기존 앱. **절대 건드리지 말 것.** `db_schema=""`는 REST를 일부러 끈 의도된 설정(복구 금지). `users`(password_hash 포함)/`todos` 테이블 있음, RLS 꺼져 있음 → REST 켜면 노출되므로 주의. |
+| **Todos board** | `efyjbcnioxggrcamyxov` | 사용자 기존 앱. **절대 건드리지 말 것.** `db_schema=""`(REST 비활성) 상태이며 — 의도된 설정으로 **취급하고 복구하지 말 것**(사용자에게 확인받지는 않은 추정). `users`(password_hash 포함)/`todos` 테이블 있음, RLS 꺼져 있음 → REST 켜면 노출되므로 주의. |
 | **gyebu-app** | `xzsmorkpaffkqzbrlhiw` | 1번 `transactions` + 2번 `posts` **공유 중**. autoconfirm(이메일 자동확인) **켜짐**. 추가 앱도 여기에 테이블 추가. |
 | **cafe board** | `fdlbxfgrhzmloxizdiwi` | 현재 INACTIVE(정지). 4번 카페 대시보드용으로 예약. |
 
 - **키 위치**: 각 앱 `build/<app>/.env.local` (git 무시됨). 코드엔 키 하드코딩 없음.
 - **관리 작업(테이블 생성/검증)**: Supabase Management API(`https://api.supabase.com/v1/...`)를 PAT로 호출. **PAT는 보안상 이 문서에 없음** → 필요 시 사용자에게 재요청(`sbp_...`, supabase.com/dashboard/account/tokens).
 - **테이블 생성/SQL**: `POST /v1/projects/<ref>/database/query` with `{"query":"..."}`.
-- ⚠️ `.env.sample`에 Todos board **실제 키(sb_secret 포함)**가 들어 있어 **git 푸시 제외**(.gitignore) 처리함. 노출 우려 시 사용자에게 키 rotate 권고.
+- ⚠️ `.env.sample`에 Todos board **실제 키(sb_secret 포함)**가 들어 있었음. **첫 커밋 전에 staging에서 제거**되어 **GitHub에는 도달하지 않았다**(git 이력 깨끗 → git 때문에 rotate 할 필요 없음). 단 이 키가 git 외 다른 경로로 유출된 적 있으면 그때만 rotate. 로컬 `.env.sample`은 사용자가 둔 상태 그대로(.gitignore로 추적 제외).
 
 ## 3. 앱별 핵심 메모
 ### 1번 gyebu-app
