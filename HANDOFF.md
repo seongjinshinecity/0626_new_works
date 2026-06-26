@@ -1,6 +1,12 @@
 # 핸드오프 문서 (작업 인계 / 컨텍스트 초기화 대비)
 
-> 최종 업데이트: 2026-06-26. 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
+> 최종 업데이트: **2026-06-26 (2번 커뮤니티 앱 런타임 검증 완료 시점)**.
+> 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
+
+> **📌 이 문서 갱신 규칙 (다음 세션도 반드시 지킬 것)**
+> 사용자 지침으로 **개발 중 마일스톤마다 이 문서를 계속 갱신**한다.
+> 갱신 시점: ① 앱 하나 완성·검증 직후 ② 환경/제약 변화(새 프로젝트·키·배포 등) ③ 커밋·푸시할 때.
+> 갱신 항목: 상단 날짜, `1. 진행 상황` 표, `6. 빠른 재개`(마지막 지점·즉시 명령), 주의사항. 갱신 후 커밋·푸시까지 한다.
 
 ## 0. 한눈에 보기
 - **목표**: AI 공장장 부트캠프 3기 퀘스트(가계부~카페 대시보드 등)를 순서대로 개발. 계획은 `개발계획.md` 참조.
@@ -55,3 +61,25 @@
 2. **3번 쇼핑몰**: `docs/guide/shopping-mall.md` 읽고 `specs/shopping-mall.spec.md` 작성 → gyebu-app 프로젝트에 테이블 추가 → 구현·검증.
 3. **4번 카페 대시보드(보스)**: cafe board 프로젝트 깨워 사용 고려. MCP+AI 포함, 스펙 큼.
 4. 각 단계마다 커밋·푸시.
+
+## 6. 빠른 재개 (지금 이어서 하려면)
+**마지막 작업 지점**: 1·2번 앱 완성·검증·푸시 완료. 사용자에게 "다음: 배포 / 3번 쇼핑몰 / dev서버 정리" 중 선택 요청한 상태.
+
+**개발 환경 재기동 명령** (작업 루트: `loop-dev-setup/`):
+```bash
+# 1번 가계부
+cd build/gyebu-app && npm install && PORT=3100 npm run dev    # http://localhost:3100
+# 2번 커뮤니티
+cd build/community-app && npm install && PORT=3200 npm run dev # http://localhost:3200
+```
+> 각 앱 `.env.local`은 git에 없음 — 새 환경이면 Supabase 키를 다시 채워야 함(키는 `2. Supabase 환경`의 ref로 `supabase projects api-keys --project-ref <ref>` 또는 사용자에게 요청).
+
+**검증 재현 요령**:
+- 가계부: dev 기동 후 `curl -X POST localhost:3100/api/transactions -H 'Content-Type: application/json' -d '{...}'` → DB는 Management API `database/query`로 확인.
+- 커뮤니티: Auth REST(`/auth/v1/signup`, `/auth/v1/token?grant_type=password`)로 사용자 A·B 토큰 발급 → `/rest/v1/posts` INSERT/PATCH/DELETE로 RLS 차단 확인. 앱 자체는 브라우저로 가입→글쓰기.
+
+**미해결/대기**:
+- Vercel 배포: 토큰 대기(구글 로그인 막힘). 토큰 받으면 `vercel deploy --token` + Vercel에 Supabase env 등록.
+- dev 서버 2개가 백그라운드로 떠 있을 수 있음(`lsof -ti:3100,:3200`).
+
+**진행 중 데모 데이터**: gyebu `transactions` 4행, community `posts` 2행(테스트 계정 글) 들어 있음 — 데모용, 필요시 정리 가능.
