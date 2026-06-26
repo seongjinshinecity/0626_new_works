@@ -1,8 +1,8 @@
 # 핸드오프 문서 (작업 인계 / 컨텍스트 초기화 대비)
 
-> 최종 업데이트: **2026-06-26 (3번 쇼핑몰 완성·검증 후 사용자 요청으로 작업 일시 중단)**.
+> 최종 업데이트: **2026-06-27 (4번 카페 대시보드 완성·검증 → 배치1 전체 완료)**.
 > 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
-> **⏸️ 중단 지점: 배치1의 1·2·3번 완료. 다음 재개 시 `5. 다음 할 일`의 4번 카페 대시보드부터 시작.**
+> **✅ 배치1(1~4번) 전부 완료. 다음 재개 시 `5. 다음 할 일`의 배치2(5번 가계부 분석 에이전트)부터.**
 
 > **📌 이 문서 갱신 규칙 (다음 세션도 반드시 지킬 것)**
 > 사용자 지침으로 **개발 중 마일스톤마다 이 문서를 계속 갱신**한다.
@@ -21,7 +21,7 @@
 | 1 | 가계부 앱 (Server+DB) | ✅ **완성·7 AC 검증 통과** | `build/gyebu-app/` |
 | 2 | 커뮤니티 앱 (Auth) | ✅ **완성·RLS 권한 검증 통과** | `build/community-app/` |
 | 3 | 쇼핑몰(결제제외) | ✅ **완성·검증 통과**(상품공개/장바구니RLS/합계, 브라우저 런타임 확인) | `build/shopping-mall/` |
-| 4 | 카페 대시보드 (보스) | ⬜ 미착수 | — |
+| 4 | 카페 대시보드 (보스) | ✅ **완성·검증**(Auth+DB+날씨API+규칙기반 AI브리핑, 브라우저 런타임 확인) | `build/cafe-dashboard/` |
 | 5~9 | 배치 2·3 (분석 에이전트/문서/자동화) | ⬜ 미착수 | — |
 
 - **배포(Vercel)**: 1·2번 모두 **미배포**. 사용자 Vercel 구글 로그인이 막힘. `deploy_to_vercel` MCP는 직접 배포 못 하고 CLI를 가리킴 → **Vercel 토큰 방식 대기 중**(vercel.com/account/tokens 발급 → `vercel deploy --token`). 배포 시 Supabase env를 Vercel 프로젝트에 등록 필요.
@@ -32,7 +32,7 @@
 | 프로젝트 | ref | 용도 / 주의 |
 | --- | --- | --- |
 | **Todos board** | `efyjbcnioxggrcamyxov` | 사용자 기존 앱. **절대 건드리지 말 것.** `db_schema=""`(REST 비활성) 상태이며 — 의도된 설정으로 **취급하고 복구하지 말 것**(사용자에게 확인받지는 않은 추정). `users`(password_hash 포함)/`todos` 테이블 있음, RLS 꺼져 있음 → REST 켜면 노출되므로 주의. |
-| **gyebu-app** | `xzsmorkpaffkqzbrlhiw` | 1번 `transactions` + 2번 `posts` + 3번 `products`/`cart` **공유 중**. autoconfirm(이메일 자동확인) **켜짐**. 추가 앱도 여기에 테이블 추가. |
+| **gyebu-app** | `xzsmorkpaffkqzbrlhiw` | 1번 `transactions` + 2번 `posts` + 3번 `products`/`cart` + 4번 `cafe_sales` **공유 중**. autoconfirm(이메일 자동확인) **켜짐**. 추가 앱도 여기에 테이블 추가(cafe board는 안 깨우고 이 프로젝트 공유로 진행함). |
 | **cafe board** | `fdlbxfgrhzmloxizdiwi` | 현재 INACTIVE(정지). 4번 카페 대시보드용으로 예약. |
 
 - **키 위치**: 각 앱 `build/<app>/.env.local` (git 무시됨). 코드엔 키 하드코딩 없음.
@@ -58,20 +58,23 @@
 - 스크린샷: headless Chrome `--screenshot` 로 캡처(`/Applications/Google Chrome.app/.../Google Chrome --headless=new --screenshot=out.png <url>`).
 
 ## 5. 다음 할 일 (추천 순서)
-1. **4번 카페 대시보드(보스)**: `docs/guide/cafe-dashboard.md` 읽고 `specs/cafe-dashboard.spec.md` 작성 → cafe board 프로젝트(현재 INACTIVE) 깨워 사용 고려. MCP+AI+날씨API(OPENWEATHER) 포함, 스펙 큼. 배치1의 마지막.
-2. 이후 배치 2(5·6번 분석 에이전트), 배치 3(7~9번 자동화/문서).
-3. (보류) 1·2·3번 **Vercel 배포** — 사용자 Vercel 로그인이 "unknown error"로 막힘. 풀리면 토큰으로 배포.
-4. 각 단계마다 커밋·푸시 + 이 핸드오프 갱신.
+1. **배치 2 — 5번 가계부 분석 에이전트**: `docs/guide/gyebu-agent.md` 읽고 스펙 작성. Supabase MCP + 분석 프롬프트. QA=샘플 질문에 데이터 근거 답변. (배치2는 앱이 아니라 "에이전트" — 검증 방식이 루브릭 기반으로 바뀜)
+2. **6번 내 카페를 아는 AI 에이전트**: `my_cafe.md` 컨텍스트 + Supabase MCP.
+3. 배치 3(7~9번): 자동 리서치 스킬(Browser MCP) / 리뷰·경쟁사→엑셀·PPT(document skills) / 인스타(Playwright, 사람 로그인 필요).
+4. (보류) 1~4번 **Vercel 배포** — 사용자 Vercel 로그인이 "unknown error"로 막힘. 풀리면 토큰으로 배포.
+5. 각 단계마다 커밋·푸시 + 이 핸드오프 갱신.
 
 ## 6. 빠른 재개 (지금 이어서 하려면)
-**마지막 작업 지점**: 1·2·3번 앱 완성·검증·푸시 완료 후 **사용자 요청으로 작업 일시 중단**. 나머지(4번~)는 나중에 진행. 재개 시 **4번 카페 대시보드(보스)**부터. (Vercel 배포는 사용자 로그인 막혀 보류 중. dev 서버 3100/3200/3300은 떠 있을 수 있음 — `lsof -ti:3100,:3200,:3300`로 정리 가능.)
+**마지막 작업 지점**: **배치1(1~4번) 전부 완성·검증·푸시 완료.** 재개 시 **배치2 5번(가계부 분석 에이전트)**부터. (Vercel 배포는 사용자 로그인 막혀 보류. dev 서버 3100~3400은 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
 
 **개발 환경 재기동 명령** (작업 루트: `loop-dev-setup/`):
 ```bash
-cd build/gyebu-app     && npm install && PORT=3100 npm run dev  # 1번 가계부   http://localhost:3100
-cd build/community-app && npm install && PORT=3200 npm run dev  # 2번 커뮤니티 http://localhost:3200
-cd build/shopping-mall && npm install && PORT=3300 npm run dev  # 3번 쇼핑몰   http://localhost:3300
+cd build/gyebu-app     && npm install && PORT=3100 npm run dev  # 1번 가계부     http://localhost:3100
+cd build/community-app && npm install && PORT=3200 npm run dev  # 2번 커뮤니티   http://localhost:3200
+cd build/shopping-mall && npm install && PORT=3300 npm run dev  # 3번 쇼핑몰     http://localhost:3300
+cd build/cafe-dashboard && npm install && PORT=3400 npm run dev # 4번 카페대시보드 http://localhost:3400
 ```
+> 로그인 필수 페이지(2번 글쓰기, 3번 장바구니, 4번 대시보드 전체) 스크린샷은 headless 단순캡처 불가 → `playwright-core`(임시 devDep) 스크립트로 로그인 후 캡처했다(캡처 후 제거함).
 > 각 앱 `.env.local`은 git에 없음 — 새 환경이면 Supabase 키를 다시 채워야 함(키는 `2. Supabase 환경`의 ref로 `supabase projects api-keys --project-ref <ref>` 또는 사용자에게 요청).
 
 **검증 재현 요령**:
@@ -82,4 +85,4 @@ cd build/shopping-mall && npm install && PORT=3300 npm run dev  # 3번 쇼핑몰
 - Vercel 배포: 토큰 대기(구글 로그인 막힘). 토큰 받으면 `vercel deploy --token` + Vercel에 Supabase env 등록.
 - dev 서버 2개가 백그라운드로 떠 있을 수 있음(`lsof -ti:3100,:3200`).
 
-**진행 중 데모 데이터**: gyebu `transactions` 4행, community `posts` 2행, shopping `products` 10행 + `cart`(테스트 계정 장바구니) — 데모용, 필요시 정리 가능.
+**진행 중 데모 데이터**: gyebu `transactions` 4행, community `posts` 2행, shopping `products` 10행 + `cart`, cafe `cafe_sales` 63행(최근 7일×9메뉴, 날짜는 seed 시점 기준 동적) — 데모용, 필요시 정리 가능.
