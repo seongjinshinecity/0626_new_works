@@ -1,8 +1,8 @@
 # 핸드오프 문서 (작업 인계 / 컨텍스트 초기화 대비)
 
-> 최종 업데이트: **2026-06-27 (4번 카페 대시보드 완성·검증 → 배치1 전체 완료)**.
+> 최종 업데이트: **2026-06-27 (배치2 5번 가계부 분석 에이전트 완성·검증)**.
 > 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
-> **✅ 배치1(1~4번) 전부 완료. 다음 재개 시 `5. 다음 할 일`의 배치2(5번 가계부 분석 에이전트)부터.**
+> **✅ 1~5번 완료. 다음 재개 시 `5. 다음 할 일`의 6번(내 카페를 아는 AI 에이전트)부터.**
 
 > **📌 이 문서 갱신 규칙 (다음 세션도 반드시 지킬 것)**
 > 사용자 지침으로 **개발 중 마일스톤마다 이 문서를 계속 갱신**한다.
@@ -22,7 +22,8 @@
 | 2 | 커뮤니티 앱 (Auth) | ✅ **완성·RLS 권한 검증 통과** | `build/community-app/` |
 | 3 | 쇼핑몰(결제제외) | ✅ **완성·검증 통과**(상품공개/장바구니RLS/합계, 브라우저 런타임 확인) | `build/shopping-mall/` |
 | 4 | 카페 대시보드 (보스) | ✅ **완성·검증**(Auth+DB+날씨API+규칙기반 AI브리핑, 브라우저 런타임 확인) | `build/cafe-dashboard/` |
-| 5~9 | 배치 2·3 (분석 에이전트/문서/자동화) | ⬜ 미착수 | — |
+| 5 | 가계부 분석 에이전트 (Agent+DB) | ✅ **완성·검증**(Supabase MCP read-only + 페르소나, MCP round-trip + SQL검증 Q&A) | `build/gyebu-agent/` |
+| 6~9 | 배치 2·3 (카페 에이전트/문서/자동화) | ⬜ 미착수 | — |
 
 - **배포(Vercel)**: 1·2번 모두 **미배포**. 사용자 Vercel 구글 로그인이 막힘. `deploy_to_vercel` MCP는 직접 배포 못 하고 CLI를 가리킴 → **Vercel 토큰 방식 대기 중**(vercel.com/account/tokens 발급 → `vercel deploy --token`). 배포 시 Supabase env를 Vercel 프로젝트에 등록 필요.
 
@@ -37,6 +38,7 @@
 
 - **키 위치**: 각 앱 `build/<app>/.env.local` (git 무시됨). 코드엔 키 하드코딩 없음.
 - **관리 작업(테이블 생성/검증)**: Supabase Management API(`https://api.supabase.com/v1/...`)를 PAT로 호출. **PAT는 보안상 이 문서에 없음** → 필요 시 사용자에게 재요청(`sbp_...`, supabase.com/dashboard/account/tokens).
+- **Supabase MCP**: 5번에서 설치함(`claude mcp add supabase --scope user ... --read-only --project-ref=<ref>`). user scope라 `~/.claude.json`(git 밖)에 저장 — PAT 인라인되지만 **커밋 대상 아님**. read-only. `claude mcp list`로 Connected 확인.
 - **테이블 생성/SQL**: `POST /v1/projects/<ref>/database/query` with `{"query":"..."}`.
 - ⚠️ `.env.sample`에 Todos board **실제 키(sb_secret 포함)**가 들어 있었음. **첫 커밋 전에 staging에서 제거**되어 **GitHub에는 도달하지 않았다**(git 이력 깨끗 → git 때문에 rotate 할 필요 없음). 단 이 키가 git 외 다른 경로로 유출된 적 있으면 그때만 rotate. 로컬 `.env.sample`은 사용자가 둔 상태 그대로(.gitignore로 추적 제외).
 
@@ -58,14 +60,15 @@
 - 스크린샷: headless Chrome `--screenshot` 로 캡처(`/Applications/Google Chrome.app/.../Google Chrome --headless=new --screenshot=out.png <url>`).
 
 ## 5. 다음 할 일 (추천 순서)
-1. **배치 2 — 5번 가계부 분석 에이전트**: `docs/guide/gyebu-agent.md` 읽고 스펙 작성. Supabase MCP + 분석 프롬프트. QA=샘플 질문에 데이터 근거 답변. (배치2는 앱이 아니라 "에이전트" — 검증 방식이 루브릭 기반으로 바뀜)
-2. **6번 내 카페를 아는 AI 에이전트**: `my_cafe.md` 컨텍스트 + Supabase MCP.
-3. 배치 3(7~9번): 자동 리서치 스킬(Browser MCP) / 리뷰·경쟁사→엑셀·PPT(document skills) / 인스타(Playwright, 사람 로그인 필요).
-4. (보류) 1~4번 **Vercel 배포** — 사용자 Vercel 로그인이 "unknown error"로 막힘. 풀리면 토큰으로 배포.
-5. 각 단계마다 커밋·푸시 + 이 핸드오프 갱신.
+1. **6번 내 카페를 아는 AI 에이전트**: `docs/guide/my-cafe-agent.md` 읽기. `my_cafe.md` 컨텍스트 + Supabase MCP(이미 설치됨, cafe_sales 활용 가능). 5번과 같은 에이전트 패턴(페르소나 + MCP + SQL검증 DEMO). 컨텍스트(카페 컨셉) 주입이 추가 포인트.
+2. 배치 3(7~9번): 자동 리서치 스킬(Browser MCP) / 리뷰·경쟁사→엑셀·PPT(document skills) / 인스타(Playwright, 사람 로그인 필요).
+3. (보류) 1~4번 **Vercel 배포** — 사용자 Vercel 로그인이 "unknown error"로 막힘. 풀리면 토큰으로 배포.
+4. 각 단계마다 커밋·푸시 + 이 핸드오프 갱신.
+
+> **배치2 메모**: 앱이 아니라 "에이전트". 산출물 = 페르소나(`.claude/agents/`) + MCP 연결 + **SQL검증 Q&A(`DEMO.md`)**. 검증 = 답의 모든 수치를 독립 SQL로 대조(순환검증 회피) + 조언이 실제 데이터 패턴 인용(맞춤성). 대화 스크린샷은 사용자 claude 세션 캡처 필요(자동 불가, DEMO transcript로 대체).
 
 ## 6. 빠른 재개 (지금 이어서 하려면)
-**마지막 작업 지점**: **배치1(1~4번) 전부 완성·검증·푸시 완료.** 재개 시 **배치2 5번(가계부 분석 에이전트)**부터. (Vercel 배포는 사용자 로그인 막혀 보류. dev 서버 3100~3400은 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
+**마지막 작업 지점**: **1~5번 완성·검증·푸시 완료.** 재개 시 **6번(내 카페를 아는 AI 에이전트)**부터 — 5번과 같은 에이전트 패턴 재사용(`build/gyebu-agent/` 참고). (Vercel 배포는 사용자 로그인 막혀 보류. dev 서버 3100~3400은 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
 
 **개발 환경 재기동 명령** (작업 루트: `loop-dev-setup/`):
 ```bash
@@ -85,4 +88,4 @@ cd build/cafe-dashboard && npm install && PORT=3400 npm run dev # 4번 카페대
 - Vercel 배포: 토큰 대기(구글 로그인 막힘). 토큰 받으면 `vercel deploy --token` + Vercel에 Supabase env 등록.
 - dev 서버 2개가 백그라운드로 떠 있을 수 있음(`lsof -ti:3100,:3200`).
 
-**진행 중 데모 데이터**: gyebu `transactions` 4행, community `posts` 2행, shopping `products` 10행 + `cart`, cafe `cafe_sales` 63행(최근 7일×9메뉴, 날짜는 seed 시점 기준 동적) — 데모용, 필요시 정리 가능.
+**진행 중 데모 데이터**: gyebu `transactions` **204행으로 재seed**(2026-03~06 4개월, 분석 에이전트용 — 월 지출 47~52건+급여, 날짜 동적), community `posts` 2행, shopping `products` 10행 + `cart`, cafe `cafe_sales` 63행 — 데모용, 필요시 정리 가능. (1번 가계부 화면은 이제 204건을 보여줌 — 기존 4행 데모는 재seed로 대체됨, 커밋된 스크린샷 PNG는 그대로.)
