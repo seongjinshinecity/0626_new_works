@@ -1,5 +1,8 @@
 # 📋 커뮤니티 앱 (Auth)
 
+> 🔗 **배포**: https://community-1r8n3d5qf-seongjinshinecitys-projects.vercel.app (Vercel, Production)
+> ⚠️ Vercel **Deployment Protection(SSO)**이 켜져 있어 소유자만 접근됩니다. "타인이 실제 가입·글쓰기"(가이드 제출물)를 하려면 Settings → Deployment Protection → Vercel Authentication 을 **Disabled**로 변경하세요.
+
 로그인한 사용자만 글을 쓰고, **자기 글만 수정/삭제**하는 공개 게시판입니다.
 권한은 앱 코드가 아니라 **Supabase RLS(Row Level Security)** 가 DB 레벨에서 강제합니다.
 

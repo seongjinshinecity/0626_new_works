@@ -1,5 +1,8 @@
 # 💰 가계부 앱 (Server + DB)
 
+> 🔗 **배포**: https://gyebu-2k3ssf75y-seongjinshinecitys-projects.vercel.app (Vercel, Production)
+> ⚠️ 현재 Vercel **Deployment Protection(SSO)**이 켜져 있어 소유자 로그인 시에만 열립니다. 외부 공개하려면 Vercel 대시보드 → 프로젝트 → Settings → Deployment Protection → Vercel Authentication 을 **Disabled**로 변경하세요.
+
 수입·지출 내역을 등록하고, 목록으로 조회하며, 카테고리별 지출 합계를 보여주는 가계부 앱입니다.
 모든 데이터는 **Supabase(Postgres)** 에 저장됩니다.
 

@@ -1,8 +1,8 @@
 # 핸드오프 문서 (작업 인계 / 컨텍스트 초기화 대비)
 
-> 최종 업데이트: **2026-06-27 (6번 내 카페 에이전트 완성·검증 → 배치2 완료)**.
+> 최종 업데이트: **2026-06-27 (6번 완성 + 웹앱 1~4번 Vercel 배포 완료)**.
 > 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
-> **✅ 1~6번 완료(배치1·2 끝). 다음 재개 시 `5. 다음 할 일`의 배치3(7번 자동 리서치 스킬)부터.**
+> **✅ 1~6번 완료(배치1·2 끝) + 1~4번 Vercel 배포 완료. 다음 재개 시 배치3(7번 자동 리서치 스킬)부터.**
 
 > **📌 이 문서 갱신 규칙 (다음 세션도 반드시 지킬 것)**
 > 사용자 지침으로 **개발 중 마일스톤마다 이 문서를 계속 갱신**한다.
@@ -26,7 +26,14 @@
 | 6 | 내 카페를 아는 AI 에이전트 (Context+Agent+DB) | ✅ **완성·검증**(my_cafe.md+cafe_sales 결합, Before/After 2쌍, 컨텍스트 로드 실증) | `build/my-cafe-agent/` |
 | 7~9 | 배치 3 (자동화/문서) | ⬜ 미착수 | — |
 
-- **배포(Vercel)**: 1·2번 모두 **미배포**. 사용자 Vercel 구글 로그인이 막힘. `deploy_to_vercel` MCP는 직접 배포 못 하고 CLI를 가리킴 → **Vercel 토큰 방식 대기 중**(vercel.com/account/tokens 발급 → `vercel deploy --token`). 배포 시 Supabase env를 Vercel 프로젝트에 등록 필요.
+- **배포(Vercel)**: ✅ **웹앱 4개(1~4번) 모두 Production 배포 완료**(빌드 Ready). 5·6번은 에이전트라 배포 대상 아님. `vercel whoami`=seongjinshinecity 인증됨. 각 프로젝트에 Supabase env(NEXT_PUBLIC_* + 1번은 service_role) 등록함.
+  | 앱 | URL |
+  | --- | --- |
+  | 1 gyebu-app | https://gyebu-2k3ssf75y-seongjinshinecitys-projects.vercel.app |
+  | 2 community-app | https://community-1r8n3d5qf-seongjinshinecitys-projects.vercel.app |
+  | 3 shopping-mall | https://shopping-mall-qudpb6fx0-seongjinshinecitys-projects.vercel.app |
+  | 4 cafe-dashboard | https://cafe-dashboard-45lp497pb-seongjinshinecitys-projects.vercel.app |
+  - ⚠️ **Deployment Protection(Vercel Authentication/SSO)**이 켜져 있어 현재는 소유자 로그인 시에만 열림(타인 공개 X). 공개하려면 각 프로젝트 Settings → Deployment Protection → Vercel Authentication = **Disabled**. (접근 제어 변경이라 Claude가 직접 끄지 않음 — 사용자가 대시보드에서.)
 
 ## 2. Supabase 환경 (중요 제약)
 무료 플랜 **활성 프로젝트 2개 한도** → **새 프로젝트 생성 불가**. 추가 앱은 기존 프로젝트에 테이블 추가로 공유한다.
@@ -64,13 +71,13 @@
 1. **배치 3 — 7번 자동 리서치 스킬**: `docs/guide/research-skill.md` 읽기. Browser MCP(claude-in-chrome, 이미 사용 중) + SKILL.md. 검증=스킬 재호출 시 동일 포맷 산출. (사람 개입 가능성 — 자동화_전체실행.md 참고)
 2. **8번 리뷰·경쟁사 → 엑셀·PPT**: `docs/guide/review-report.md`. document skills(xlsx/pptx) 활용 — 산출물 파일 생성/검증.
 3. **9번 인스타 인플루언서 찾기**: `docs/guide/instagram-influencer.md`. Playwright/Chrome MCP. **사람이 인스타 직접 로그인 필요**(키 저장 금지) → 반자동.
-4. (보류) 1~4번 **Vercel 배포** — 사용자 Vercel 로그인이 "unknown error"로 막힘. 풀리면 토큰으로 배포.
+4. ✅ 1~4번 **Vercel 배포 완료**(섹션1 참고). 남은 건 사용자가 Deployment Protection 해제(공개용).
 5. 각 단계마다 커밋·푸시 + 이 핸드오프 갱신.
 
 > **배치2 메모**: 앱이 아니라 "에이전트". 산출물 = 페르소나(`.claude/agents/`) + MCP 연결 + **SQL검증 Q&A(`DEMO.md`)**. 검증 = 답의 모든 수치를 독립 SQL로 대조(순환검증 회피) + 조언이 실제 데이터 패턴 인용(맞춤성). 대화 스크린샷은 사용자 claude 세션 캡처 필요(자동 불가, DEMO transcript로 대체).
 
 ## 6. 빠른 재개 (지금 이어서 하려면)
-**마지막 작업 지점**: **1~6번 완성·검증·푸시 완료(배치1·2 끝).** 재개 시 **배치3 7번(자동 리서치 스킬)**부터. 배치3은 Browser/Playwright/document skills 중심이라 검증 방식이 또 다름(산출물 파일·스킬 재현성). (Vercel 배포는 사용자 로그인 막혀 보류. dev 서버 3100~3400은 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
+**마지막 작업 지점**: **1~6번 완성·검증·푸시 완료(배치1·2 끝).** 재개 시 **배치3 7번(자동 리서치 스킬)**부터. 배치3은 Browser/Playwright/document skills 중심이라 검증 방식이 또 다름(산출물 파일·스킬 재현성). (Vercel 배포 1~4번 완료 — 공개는 사용자가 Protection 해제. dev 서버 3100~3400은 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
 > **에이전트 패턴 재사용**: 5·6번 산출물 = 페르소나(`.claude/agents/`) + (5번)MCP/(6번)Read+MCP + DEMO(SQL검증 / Before·After). 새 에이전트도 이 틀.
 
 **개발 환경 재기동 명령** (작업 루트: `loop-dev-setup/`):
@@ -88,7 +95,7 @@ cd build/cafe-dashboard && npm install && PORT=3400 npm run dev # 4번 카페대
 - 커뮤니티: Auth REST(`/auth/v1/signup`, `/auth/v1/token?grant_type=password`)로 사용자 A·B 토큰 발급 → `/rest/v1/posts` INSERT/PATCH/DELETE로 RLS 차단 확인. 앱 자체는 브라우저로 가입→글쓰기.
 
 **미해결/대기**:
-- Vercel 배포: 토큰 대기(구글 로그인 막힘). 토큰 받으면 `vercel deploy --token` + Vercel에 Supabase env 등록.
+- Vercel 배포: ✅ 1~4번 완료(URL은 섹션2). 재배포는 각 앱 폴더에서 `vercel deploy --prod --yes`(`.vercel/`로 연결됨, env 등록 완료). 공개하려면 사용자가 Deployment Protection 해제.
 - dev 서버 2개가 백그라운드로 떠 있을 수 있음(`lsof -ti:3100,:3200`).
 
 **진행 중 데모 데이터**: gyebu `transactions` **204행으로 재seed**(2026-03~06 4개월, 분석 에이전트용 — 월 지출 47~52건+급여, 날짜 동적), community `posts` 2행, shopping `products` 10행 + `cart`, cafe `cafe_sales` 63행 — 데모용, 필요시 정리 가능. (1번 가계부 화면은 이제 204건을 보여줌 — 기존 4행 데모는 재seed로 대체됨, 커밋된 스크린샷 PNG는 그대로.)

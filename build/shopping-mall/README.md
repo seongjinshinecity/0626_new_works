@@ -1,5 +1,8 @@
 # 🛍️ 쇼핑몰 (Auth + DB, 결제 제외)
 
+> 🔗 **배포**: https://shopping-mall-qudpb6fx0-seongjinshinecitys-projects.vercel.app (Vercel, Production)
+> ⚠️ Vercel **Deployment Protection(SSO)**이 켜져 있어 소유자만 접근됩니다. 외부 공개하려면 Settings → Deployment Protection → Vercel Authentication 을 **Disabled**로 변경하세요.
+
 상품 목록(공개) → 장바구니 담기(로그인) → 수량 변경·삭제·합계까지. **결제는 제외**("주문하기"는 준비 중).
 장바구니 권한은 **Supabase RLS**가 DB 레벨에서 강제합니다.
 

@@ -1,5 +1,8 @@
 # ☕ 카페 사장님 대시보드 (보스 퀘스트)
 
+> 🔗 **배포**: https://cafe-dashboard-45lp497pb-seongjinshinecitys-projects.vercel.app (Vercel, Production)
+> ⚠️ Vercel **Deployment Protection(SSO)**이 켜져 있어 소유자만 접근됩니다. 외부 공개하려면 Settings → Deployment Protection → Vercel Authentication 을 **Disabled**로 변경하세요.
+
 로그인한 사장님에게 **카페 운영 데이터를 한 화면**으로 보여주고, 데이터를 종합한 **AI 브리핑**을 생성하는 대시보드입니다.
 
 - 스택: **Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4**
