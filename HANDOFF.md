@@ -1,8 +1,9 @@
 # 핸드오프 문서 (작업 인계 / 컨텍스트 초기화 대비)
 
-> 최종 업데이트: **2026-06-27 (배치3 완료 — 7·8 완성 + 9 프레임워크)**.
+> 최종 업데이트: **2026-06-27 (배치3 마무리 — 7·8 완성 + 9 프레임워크+가상데모, 제출물 스크린샷 보강)**.
 > 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
-> **✅ 1~8번 완료 + 9번 프레임워크 완성(실데이터만 사용자 인스타 로그인 대기). 9개 퀘스트 전부 착수·완료.** 남은 사용자 작업: ① 9번 인스타 본인 로그인 후 실후보 입력 ② Vercel Deployment Protection 해제(1~4번 공개).
+> **✅ 1~8번 완성·검증 + 9번 프레임워크 완성 + 가상 데모로 워크플로우 시연. 9개 퀘스트 전부 완료(최신 커밋 `68c5961`).**
+> 남은 사용자 작업: ① 9번 인스타 **본인 로그인** 후 실후보 입력(가상 데모를 실데이터로 교체) ② Vercel Deployment Protection 해제(1~4번 공개) ③ 8번 엑셀/PPT를 Excel·PowerPoint로 열어 차트·표 최종 확인.
 
 > **📌 이 문서 갱신 규칙 (다음 세션도 반드시 지킬 것)**
 > 사용자 지침으로 **개발 중 마일스톤마다 이 문서를 계속 갱신**한다.
@@ -24,9 +25,9 @@
 | 4 | 카페 대시보드 (보스) | ✅ **완성·검증**(Auth+DB+날씨API+규칙기반 AI브리핑, 브라우저 런타임 확인) | `build/cafe-dashboard/` |
 | 5 | 가계부 분석 에이전트 (Agent+DB) | ✅ **완성·검증**(Supabase MCP read-only + 페르소나, MCP round-trip + SQL검증 Q&A) | `build/gyebu-agent/` |
 | 6 | 내 카페를 아는 AI 에이전트 (Context+Agent+DB) | ✅ **완성·검증**(my_cafe.md+cafe_sales 결합, Before/After 2쌍, 컨텍스트 로드 실증) | `build/my-cafe-agent/` |
-| 7 | 자동 리서치 스킬 (Skill) | ✅ **완성·검증**(SKILL.md 박제, WebSearch/WebFetch 수집→고정 포맷. headless `claude -p` 재호출 2회로 트리거+재현성 실증) | `build/research-skill/` |
-| 8 | 리뷰·경쟁 리포트 → 엑셀·PPT | ✅ **완성·검증**(VoC 엑셀 5시트+차트3개 / 경쟁 PPT 5슬라이드+비교표, 파일 객체 재오픈 검증) | `build/review-report/` |
-| 9 | 인스타 인플루언서 (반자동) | 🟡 **프레임워크 완성·실데이터 대기**(타겟/방법론/빈 템플릿/DM초안/계산기·보기보조 — 실후보·수치는 사용자 본인 인스타 로그인 후 입력, 가짜 계정 금지) | `build/instagram-influencer/` |
+| 7 | 자동 리서치 스킬 (Skill) | ✅ **완성·검증**(SKILL.md 박제, WebSearch/WebFetch 수집→고정 포맷. headless `claude -p` 재호출 2회로 트리거+재현성 실증, 탐색 스크린샷 4장) | `build/research-skill/` |
+| 8 | 리뷰·경쟁 리포트 → 엑셀·PPT | ✅ **완성·검증**(VoC 엑셀 5시트+차트3개 / 경쟁 PPT 5슬라이드+비교표, 파일 객체 재오픈+Quick Look 렌더 검증. 전체 시트/슬라이드는 사용자가 Excel/PPT로 열어 확인) | `build/review-report/` |
+| 9 | 인스타 인플루언서 (반자동) | 🟡 **프레임워크 완성 + 가상 데모 시연**(타겟/방법론/빈 템플릿/DM초안/계산기·보기보조 + `influencers.example.md`에 `@demo_*` 가공 5명으로 점수화→Top3 전체 시연). **실후보·수치는 사용자 본인 인스타 로그인 후 입력, 실존 @핸들 지어내기 금지** | `build/instagram-influencer/` |
 
 - **배포(Vercel)**: ✅ **웹앱 4개(1~4번) 모두 Production 배포 완료**(빌드 Ready). 5·6번은 에이전트라 배포 대상 아님. `vercel whoami`=seongjinshinecity 인증됨. 각 프로젝트에 Supabase env(NEXT_PUBLIC_* + 1번은 service_role) 등록함.
   | 앱 | URL |
@@ -71,17 +72,16 @@
 - 빌드: `npm run build`. dev: `PORT=<n> npm run dev`. 검증 시 포트 3100(gyebu)/3200(community) 사용했음.
 - 스크린샷: headless Chrome `--screenshot` 로 캡처(`/Applications/Google Chrome.app/.../Google Chrome --headless=new --screenshot=out.png <url>`).
 
-## 5. 다음 할 일 (추천 순서)
-1. **배치 3 — 7번 자동 리서치 스킬**: `docs/guide/research-skill.md` 읽기. Browser MCP(claude-in-chrome, 이미 사용 중) + SKILL.md. 검증=스킬 재호출 시 동일 포맷 산출. (사람 개입 가능성 — 자동화_전체실행.md 참고)
-2. **8번 리뷰·경쟁사 → 엑셀·PPT**: `docs/guide/review-report.md`. document skills(xlsx/pptx) 활용 — 산출물 파일 생성/검증.
-3. **9번 인스타 인플루언서 찾기**: `docs/guide/instagram-influencer.md`. Playwright/Chrome MCP. **사람이 인스타 직접 로그인 필요**(키 저장 금지) → 반자동.
-4. ✅ 1~4번 **Vercel 배포 완료**(섹션1 참고). 남은 건 사용자가 Deployment Protection 해제(공개용).
-5. 각 단계마다 커밋·푸시 + 이 핸드오프 갱신.
+## 5. 다음 할 일 (= 남은 사용자 작업)
+> 9개 퀘스트 개발·검증은 모두 끝남. 아래는 Claude가 대신 할 수 없는(권한·로그인) 사용자 몫.
+1. **9번 실데이터 입력**: 본인 인스타 로그인 → `build/instagram-influencer/assist_browse.py`로 해시태그 탐색 → `influencers.template.md`를 실제 @계정·수치로 채우기(`influencers.example.md` 가상 데모와 동일하게 동작). DM은 `dm-drafts.md` 개인화해 **사람이 직접** 발송.
+2. **Vercel 공개**: 1~4번 각 프로젝트 Settings → Deployment Protection → Vercel Authentication = **Disabled** (접근 제어라 Claude가 직접 안 함).
+3. **8번 최종 확인**: `build/review-report/out/voc_analysis.xlsx`·`competitor_analysis.pptx`를 Excel/PowerPoint로 열어 차트·비교표 렌더 확인.
 
 > **배치2 메모**: 앱이 아니라 "에이전트". 산출물 = 페르소나(`.claude/agents/`) + MCP 연결 + **SQL검증 Q&A(`DEMO.md`)**. 검증 = 답의 모든 수치를 독립 SQL로 대조(순환검증 회피) + 조언이 실제 데이터 패턴 인용(맞춤성). 대화 스크린샷은 사용자 claude 세션 캡처 필요(자동 불가, DEMO transcript로 대체).
 
 ## 6. 빠른 재개 (지금 이어서 하려면)
-**마지막 작업 지점**: **1~6번 완성·검증·푸시 완료(배치1·2 끝).** 재개 시 **배치3 7번(자동 리서치 스킬)**부터. 배치3은 Browser/Playwright/document skills 중심이라 검증 방식이 또 다름(산출물 파일·스킬 재현성). (Vercel 배포 1~4번 완료 — 공개는 사용자가 Protection 해제. dev 서버 3100~3400은 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
+**마지막 작업 지점**: **9개 퀘스트 전부 완성·검증·푸시 완료(배치1·2·3 끝, 최신 `68c5961`).** 개발 측 할 일은 없음 — 남은 건 섹션5의 사용자 작업(9번 실데이터·Vercel 공개·8번 파일 열어 확인)뿐. 배치3 검증 방식 메모: 7번=스킬 재현성(`claude -p` 재호출), 8번=파일 객체 재오픈+Quick Look 렌더, 9번=가상 데모로 로직 시연(실데이터는 사용자). (dev 서버 3100~3400 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
 > **에이전트 패턴 재사용**: 5·6번 산출물 = 페르소나(`.claude/agents/`) + (5번)MCP/(6번)Read+MCP + DEMO(SQL검증 / Before·After). 새 에이전트도 이 틀.
 
 **개발 환경 재기동 명령** (작업 루트: `loop-dev-setup/`):
