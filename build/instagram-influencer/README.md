@@ -14,6 +14,7 @@
 | `target.md` | 타겟 인플루언서 조건 (my_cafe.md 기반: 디저트·성수·마이크로) |
 | `methodology.md` | 인게이지먼트율 공식 + 적합도 100점 점수표 + 절차 + 안전 경계 |
 | `influencers.template.md` | Top5 **빈 표**(실데이터 입력 대기) |
+| `influencers.example.md` | **가상 데모** — `@demo_*` 가공 계정으로 점수화→Top3 선정 전체 시연(실존 인물 아님) |
 | `dm-drafts.md` | Top3 컨택 DM 초안 3종(개인화 placeholder) |
 | `engagement.py` | 율/등급 계산기 **(동작 검증됨)** |
 | `assist_browse.py` | 본인 로그인 크롬에서 해시태그를 한 명씩 열어주는 보기 보조 |
@@ -24,6 +25,12 @@
 ```
 - 최근 9~12개 게시물 평균 기준. 3%+ 양호, 6%+ 우수, 1% 미만은 가짜 팔로워 의심.
 - 검증: `python3 engagement.py 8200 540 31` → 6.96% 우수 / `... 50000 120 4` → 0.25% 경고.
+
+## 가상 데모로 워크플로우 검증 (`influencers.example.md`)
+실제 인스타 로그인 없이도 "데이터가 들어오면 어떻게 선정되는지"를 보이기 위해, **명백히 가공된 `@demo_*` 후보 5명**으로 파이프라인을 끝까지 돌렸습니다. 계정·수치는 가상이지만 **율·점수 계산은 진짜 로직**입니다.
+- 결과: 팔로워 1위(`@demo_food_mega_05`, 5만)가 반응률 0.25%로 **탈락**, 반응·적합도 높은 후보가 Top3로 — 인게이지먼트율 기반 선정의 핵심을 시연.
+- Top3: demo_01(97) → demo_03(89) → demo_02(75), 각각 DM 초안 A/C/B로 매칭.
+> ⚠️ 이 데모는 실존 인물이 아니며 실제 컨택 대상이 아닙니다. 실제 발굴은 아래 절차로 본인이 진행합니다.
 
 ## 사용자가 할 일 (반자동 절차)
 1. **본인 인스타 로그인**(크롬). ⚠️ 비밀번호는 Claude에 입력하지 않습니다.
@@ -45,6 +52,7 @@ build/instagram-influencer/
 ├─ target.md                 # 타겟 정의
 ├─ methodology.md            # 선정 방법론 + 안전 경계
 ├─ influencers.template.md   # Top5 빈 표(실데이터 대기)
+├─ influencers.example.md    # 가상 데모(@demo_* — 워크플로우 시연)
 ├─ dm-drafts.md              # Top3 DM 초안
 ├─ engagement.py             # 율 계산기(검증)
 └─ assist_browse.py          # 보기 보조(본인 로그인 필요)
