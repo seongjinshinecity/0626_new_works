@@ -1,12 +1,16 @@
-# SPEC — [Auth+DB+API+AI] 카페 사장님 대시보드 (보스)
+# SPEC — [Auth+MCP+DB+App] 카페 사장님 대시보드 (보스)
 
 > 완료의 정의. verifier는 아래 AC를 실제 실행으로 검증한다.
 > 출처 가이드: `docs/guide/cafe-dashboard.md` ("위젯 2~3개만 동작해도 인정", 완벽 추구 금지)
 
 ## 범위 결정 (사용자 확정)
-- **데이터 소스 2개**: ① Supabase DB(카페 매출/메뉴) ② 날씨 API(**Open-Meteo, 키 불필요**).
-- **AI 브리핑**: API 키 없이 **규칙기반**(서버가 매출·인기메뉴·날씨를 조합해 자연어 브리핑 생성).
-- Notion MCP·Claude API·결제·멀티카페는 범위 밖.
+- **데이터 소스 3개**: ① Supabase DB(카페 매출/메뉴) ② 날씨 API(**Open-Meteo, 키 불필요**) ③ **MCP**(`cafe-ops` stdio 서버 — 할일/발주).
+- **AI 브리핑**: API 키 없이 **규칙기반**(서버가 매출·인기메뉴·날씨·MCP 운영데이터를 조합해 자연어 브리핑 생성).
+- **MCP**: 가이드 제목 [Auth+**MCP**+DB+App]의 MCP 충족. Notion MCP 대신 자체 stdio MCP 서버를 Next 서버가 클라이언트로 `listTools`/`callTool`. ⚠️ Vercel 서버리스는 spawn 불가 → 로컬 작동 + 배포 시 graceful degrade.
+- Claude API·결제·멀티카페는 범위 밖.
+
+## AC 추가 (MCP)
+- **AC11 (MCP 소스)**: `cafe-ops` MCP 서버를 클라이언트가 stdio로 spawn해 `get_cafe_ops`를 호출하고, 결과(할일/발주)를 위젯+브리핑에 렌더한다. 실패 시 degrade(페이지 유지). 검증: `node mcp-server/_roundtrip_test.mjs` 라운드트립 + 로컬 런타임 위젯 렌더 스크린샷(`dashboard-mcp.png`).
 
 ## 스택
 - Next.js 16 (App Router) + React 19 + TS + Tailwind v4

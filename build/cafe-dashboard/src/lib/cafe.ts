@@ -79,7 +79,11 @@ export function summarize(sales: Sale[]): CafeSummary {
 }
 
 // 규칙기반 AI 브리핑 — 실제 매출 숫자/메뉴/날씨를 문장에 반영(하드코딩 아님).
-export function buildBriefing(s: CafeSummary, w: Weather | null): string {
+export function buildBriefing(
+  s: CafeSummary,
+  w: Weather | null,
+  ops?: { tasks: string[]; reorder: { item: string }[] } | null,
+): string {
   if (!s.latestDate) return "아직 매출 데이터가 없어 브리핑을 생성할 수 없습니다.";
 
   const parts: string[] = [];
@@ -114,6 +118,13 @@ export function buildBriefing(s: CafeSummary, w: Weather | null): string {
     }
   } else {
     parts.push(`(날씨 정보를 불러오지 못해 날씨 기반 제안은 생략합니다.)`);
+  }
+
+  if (ops && ops.tasks.length) {
+    const reorderStr = ops.reorder.length
+      ? ` 발주 추천 ${ops.reorder.length}건(${ops.reorder.map((r) => r.item).join(", ")})도 확인하세요.`
+      : "";
+    parts.push(`📋 오늘 운영 할일 ${ops.tasks.length}건이 있습니다.${reorderStr}`);
   }
 
   return parts.join(" ");

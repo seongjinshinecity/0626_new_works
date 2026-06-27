@@ -22,7 +22,7 @@
 | 1 | 가계부 앱 (Server+DB) | ✅ **완성·7 AC 검증 통과** | `build/gyebu-app/` |
 | 2 | 커뮤니티 앱 (Auth) | ✅ **완성·RLS 권한 검증 통과** | `build/community-app/` |
 | 3 | 쇼핑몰(결제제외) | ✅ **완성·검증 통과**(상품공개/장바구니RLS/합계, 브라우저 런타임 확인) | `build/shopping-mall/` |
-| 4 | 카페 대시보드 (보스) | ✅ **완성·검증**(Auth+DB+날씨API+규칙기반 AI브리핑, 브라우저 런타임 확인) | `build/cafe-dashboard/` |
+| 4 | 카페 대시보드 (보스) | ✅ **완성·검증**(Auth+**MCP**+DB+날씨API+규칙기반 AI브리핑. 소스 3종=DB/날씨/MCP(cafe-ops 할일·발주). MCP 라운드트립+로컬 런타임 위젯 렌더 검증, Vercel 서버리스는 stdio spawn 불가→degrade) | `build/cafe-dashboard/` |
 | 5 | 가계부 분석 에이전트 (Agent+DB) | ✅ **완성·검증**(Supabase MCP read-only + 페르소나, MCP round-trip + SQL검증 Q&A) | `build/gyebu-agent/` |
 | 6 | 내 카페를 아는 AI 에이전트 (Context+Agent+DB) | ✅ **완성·검증**(my_cafe.md+cafe_sales 결합, Before/After 2쌍, 컨텍스트 로드 실증) | `build/my-cafe-agent/` |
 | 7 | 자동 리서치 스킬 (Skill) | ✅ **완성·검증**(SKILL.md 박제, WebSearch/WebFetch 수집→고정 포맷. headless `claude -p` 재호출 2회로 트리거+재현성 실증, 탐색 스크린샷 4장) | `build/research-skill/` |

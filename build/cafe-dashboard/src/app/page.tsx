@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getWeather } from "@/lib/weather";
+import { getCafeOps } from "@/lib/mcp-ops";
 import { summarize, buildBriefing, won, type Sale } from "@/lib/cafe";
 import { signOut } from "./actions";
 
@@ -27,8 +28,12 @@ export default async function Dashboard() {
   // 데이터 소스 ② 날씨 (Open-Meteo, 실패해도 페이지 유지)
   const weather = await getWeather();
 
-  // AI 브리핑 (규칙기반 종합)
-  const briefing = buildBriefing(summary, weather);
+  // 데이터 소스 ③ MCP (cafe-ops 서버: 오늘 할일/발주, stdio. 실패해도 degrade)
+  const opsResult = await getCafeOps();
+  const ops = opsResult.ops;
+
+  // AI 브리핑 (DB 매출 + 날씨 + MCP 운영 데이터 종합)
+  const briefing = buildBriefing(summary, weather, ops);
 
   // 날짜별 매출 (막대용)
   const byDate = new Map<string, number>();
@@ -75,6 +80,60 @@ export default async function Dashboard() {
         />
       </section>
 
+      {/* MCP 소스: 오늘 할일/발주 (cafe-ops MCP 서버) */}
+      <section className="rounded-2xl border border-sky-300/40 bg-sky-50 p-5 dark:bg-sky-950/20">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-sky-800 dark:text-sky-300">
+            📋 오늘 운영 할일 · 발주 (MCP)
+          </h2>
+          <span className="text-xs text-sky-700/70 dark:text-sky-400/70">
+            {opsResult.via === "mcp"
+              ? `via MCP · 도구: ${opsResult.tools.join(", ")}`
+              : "MCP 미연결 — degrade(이 환경에선 생략)"}
+          </span>
+        </div>
+        {ops ? (
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <div className="mb-1 text-xs font-semibold text-sky-700 dark:text-sky-400">
+                ✅ 할일 ({ops.weekday}요일)
+              </div>
+              <ul className="flex flex-col gap-1 text-sm">
+                {ops.tasks.map((t, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="text-sky-500">·</span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <div className="mb-1 text-xs font-semibold text-sky-700 dark:text-sky-400">
+                📦 발주 추천
+              </div>
+              {ops.reorder.length === 0 ? (
+                <p className="text-sm text-black/50">오늘 권장 발주 없음</p>
+              ) : (
+                <ul className="flex flex-col gap-1 text-sm">
+                  {ops.reorder.map((r, i) => (
+                    <li key={i} className="flex items-center justify-between gap-2">
+                      <span>{r.item}</span>
+                      <span className="text-xs text-black/50 dark:text-white/50">
+                        {r.priority} · {r.reason}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-black/50">
+            MCP 서버에 연결하지 못해 운영 할일을 불러오지 못했습니다(페이지는 정상).
+          </p>
+        )}
+      </section>
+
       <div className="grid gap-5 md:grid-cols-2">
         {/* 인기 메뉴 (AC5) */}
         <section className="rounded-2xl border border-black/10 p-5 dark:border-white/10">
@@ -119,7 +178,7 @@ export default async function Dashboard() {
       </div>
 
       <footer className="text-xs text-black/40 dark:text-white/40">
-        연결된 데이터 소스: Supabase DB(cafe_sales) · Open-Meteo 날씨 API
+        연결된 데이터 소스 3종: Supabase DB(cafe_sales) · Open-Meteo 날씨 API · MCP(cafe-ops 할일/발주)
       </footer>
     </main>
   );

@@ -9,19 +9,30 @@
 - 인증/DB: **Supabase Auth + Postgres**, 세션 `@supabase/ssr` + `src/proxy.ts`
 - 출처 스펙: `../../specs/cafe-dashboard.spec.md`
 
-## 연결된 데이터 소스 (2개)
+## 연결된 데이터 소스 (3개 — Auth+**MCP**+DB+App)
 
 | # | 소스 | 내용 | 키 |
 | --- | --- | --- | --- |
 | 1 | **Supabase DB** (`cafe_sales`) | 일자별 메뉴 판매(매출·수량) | anon 키 + 로그인 세션 |
 | 2 | **Open-Meteo 날씨 API** | 서울 현재/오늘 기온·강수확률 | **불필요** |
+| 3 | **MCP** (`cafe-ops` 서버) | 오늘 운영 할일·발주 추천(요일 기반) | **불필요**(stdio) |
+
+### MCP 소스 상세 (가이드 제목의 `MCP` 충족)
+- 가이드 [Auth+**MCP**+DB+App]의 "Notion MCP(할일/발주)" 자리를 **자체 MCP 서버**로 구현(외부 인증 불필요).
+- 서버: `mcp-server/cafe-ops-server.mjs` — `@modelcontextprotocol/sdk` **stdio 서버**, 도구 `get_cafe_ops`.
+- 클라이언트: `src/lib/mcp-ops.ts` — Next 서버 컴포넌트가 **MCP 클라이언트로 spawn → `listTools` → `callTool`** (진짜 프로토콜 라운드트립, SDK import만 한 가짜 아님).
+- 라운드트립 증거 재현: `node mcp-server/_roundtrip_test.mjs` → `listTools=["get_cafe_ops"]` + `callTool` 결과 출력.
+- 대시보드 위젯에 **`via MCP · 도구: get_cafe_ops`** 표기로 실제 경유를 노출. AI 브리핑에도 MCP 데이터(할일 건수·발주) 반영.
+- 🛡️ **graceful degrade**: 연결 실패 시 `null` 반환 → MCP 위젯만 비활성, **페이지·기존 DB/날씨는 그대로**.
+- ⚠️ **로컬/Node 런타임 전용**: Vercel **서버리스는 stdio 서브프로세스 spawn 불가**(read-only FS·npx 없음) → 배포 인스턴스에선 자동 degrade(위젯만 빠지고 앱은 정상). 로컬 `npm run dev`/`start`에서 MCP 작동을 검증함.
 
 ## 기능 (위젯)
 
-- 🤖 **AI 브리핑** — 매출·인기메뉴·날씨를 종합한 자연어 브리핑(규칙기반, API 키 0). 실제 DB 숫자와 날씨 값을 문장에 반영.
+- 🤖 **AI 브리핑** — 매출·인기메뉴·날씨·**MCP 운영 할일/발주**를 종합한 자연어 브리핑(규칙기반, API 키 0). 실제 DB 숫자·날씨·MCP 데이터를 문장에 반영.
 - 💰 **매출 요약** — 최신 영업일 매출/판매수, 최근 7일 누적, 일평균
 - 🔥 **인기 메뉴 TOP 5** — 판매량 기준
 - 🌤️ **날씨** — Open-Meteo 실데이터(실패 시 위젯만 degrade, 페이지는 유지)
+- 📋 **오늘 운영 할일·발주 (MCP)** — `cafe-ops` MCP 서버에서 요일 기반 할일·발주 추천(실패 시 위젯만 degrade)
 - 📊 **일별 매출** — 최근 7일 막대
 
 > 매출 요약·브리핑은 하드코딩된 "어제"가 아니라 **데이터에 실제 존재하는 최신 날짜**를 기준으로 집계합니다(실행 시점과 무관하게 동작).
@@ -65,4 +76,5 @@ src/
 ```
 
 ## 스크린샷
-`docs/screenshots/dashboard.png` (로그인 후 대시보드).
+- `docs/screenshots/dashboard.png` — 로그인 후 대시보드(초기).
+- `docs/screenshots/dashboard-mcp.png` — **MCP 소스 통합본**: "오늘 운영 할일·발주 (MCP)" 위젯에 `via MCP · 도구: get_cafe_ops` 표기, 브리핑에 MCP 데이터 반영, footer "데이터 소스 3종". 로컬 런타임에서 실제 MCP spawn+렌더 확인.
