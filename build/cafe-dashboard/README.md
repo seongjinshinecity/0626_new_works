@@ -23,8 +23,9 @@
 - 클라이언트: `src/lib/mcp-ops.ts` — Next 서버 컴포넌트가 **MCP 클라이언트로 spawn → `listTools` → `callTool`** (진짜 프로토콜 라운드트립, SDK import만 한 가짜 아님).
 - 라운드트립 증거 재현: `node mcp-server/_roundtrip_test.mjs` → `listTools=["get_cafe_ops"]` + `callTool` 결과 출력.
 - 대시보드 위젯에 **`via MCP · 도구: get_cafe_ops`** 표기로 실제 경유를 노출. AI 브리핑에도 MCP 데이터(할일 건수·발주) 반영.
-- 🛡️ **graceful degrade**: 연결 실패 시 `null` 반환 → MCP 위젯만 비활성, **페이지·기존 DB/날씨는 그대로**.
-- ⚠️ **로컬/Node 런타임 전용**: Vercel **서버리스는 stdio 서브프로세스 spawn 불가**(read-only FS·npx 없음) → 배포 인스턴스에선 자동 degrade(위젯만 빠지고 앱은 정상). 로컬 `npm run dev`/`start`에서 MCP 작동을 검증함.
+- 🛡️ **graceful degrade (실증됨)**: 연결 실패 시 `null` 반환 → MCP 위젯만 비활성, **페이지·기존 DB/날씨·브리핑은 그대로**. MCP 서버를 임시 제거하고 실제 렌더를 확인함 → `docs/screenshots/dashboard-mcp-degraded.png`("MCP 미연결 — degrade" 표기 + 나머지 위젯 정상). 로그: `[mcp-ops] MCP 연결 실패 → degrade`.
+- ⚠️ **로컬/Node 런타임 전용**: Vercel **서버리스는 stdio 서브프로세스 spawn 불가**(read-only FS·npx 없음) → 배포 인스턴스에선 위 degrade가 자동 적용(위젯만 빠지고 앱은 정상). 로컬 `npm run dev`/`start`에서 MCP 작동을 검증함.
+- 📌 **현재 라이브 Vercel 배포는 MCP 이전 코드**입니다(GitHub `main`엔 MCP 반영, 아직 재배포 안 함). 재배포(`vercel deploy --prod`)하면 위 degrade가 적용됩니다(MCP는 로컬에서만 작동).
 
 ## 기능 (위젯)
 
@@ -77,4 +78,5 @@ src/
 
 ## 스크린샷
 - `docs/screenshots/dashboard.png` — 로그인 후 대시보드(초기).
-- `docs/screenshots/dashboard-mcp.png` — **MCP 소스 통합본**: "오늘 운영 할일·발주 (MCP)" 위젯에 `via MCP · 도구: get_cafe_ops` 표기, 브리핑에 MCP 데이터 반영, footer "데이터 소스 3종". 로컬 런타임에서 실제 MCP spawn+렌더 확인.
+- `docs/screenshots/dashboard-mcp.png` — **MCP 성공 경로**: "오늘 운영 할일·발주 (MCP)" 위젯에 `via MCP · 도구: get_cafe_ops` 표기, 브리핑에 MCP 데이터 반영, footer "데이터 소스 3종". 로컬 런타임에서 실제 MCP spawn+렌더 확인.
+- `docs/screenshots/dashboard-mcp-degraded.png` — **MCP degrade 경로**: MCP 서버 부재 시 위젯만 "MCP 미연결" 표기되고 매출·날씨·인기메뉴·브리핑은 정상(안전 속성 실증).
