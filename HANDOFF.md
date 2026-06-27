@@ -3,7 +3,7 @@
 > 최종 업데이트: **2026-06-27 (4번 MCP 소스 보강 완료 + 폴더 Week5-1 개명 + Week5 폴더 동거)**.
 > 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
 > **✅ 0~9번 전부 완료(0=my_cafe.md 선행 + 1~9 퀘스트). 4번에 MCP 3번째 소스까지 추가해 가이드 제목 [Auth+MCP+DB+App] 완전 충족. 최신 커밋 `d86c1ec`.**
-> 남은 사용자 작업: ① 9번 인스타 **본인 로그인** 후 실후보 입력(가상 데모를 실데이터로 교체) ② Vercel Deployment Protection 해제+재배포(1~4번, 4번은 재배포해도 MCP는 로컬만·배포본 degrade) ③ 8번 엑셀/PPT를 Excel·PowerPoint로 열어 차트·표 최종 확인 ④ (선택) 0번 my_cafe.md 슬로건 보강, 5·6·9번 본인 세션 스크린샷.
+> 남은 사용자 작업: ① 9번 인스타 **본인 로그인** 후 실후보 입력(가상 데모를 실데이터로 교체) ② Vercel Deployment Protection 해제+재배포(1~4번, 4번은 재배포해도 MCP는 로컬만·배포본 degrade) ③ 8번 엑셀/PPT를 Excel·PowerPoint로 열어 차트·표 최종 확인 ④ (선택) 5·6·9번 본인 세션 스크린샷. (0번 my_cafe.md 슬로건·분위기 보강은 ✅완료 — 가이드 형식 9항목 충족)
 
 > **📂 폴더·저장소 구조 (중요 — 경로 바뀜)**
 > - 작업 루트가 `loop-dev-setup` → **`Week5-1/`** 로 개명됨(`/Users/hwangseongjin/Desktop/Folder Docu/Week5-1/`).
