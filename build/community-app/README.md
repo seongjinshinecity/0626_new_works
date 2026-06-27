@@ -90,6 +90,10 @@ src/
    └─ types.ts
 ```
 
-## 스크린샷
+## 스크린샷 (가이드 제출물: 가입→로그인→글쓰기→목록)
 
-`docs/screenshots/` 폴더 참고.
+`docs/screenshots/`:
+- `signup.png` / `login.png` — 회원가입·로그인 화면
+- `write.png` — 글쓰기 폼(제목·내용 입력)
+- `list_after_post.png` / `list.png` — 작성 후 글 목록(최신순)
+> 로컬 dev(`PORT=3200`)에서 실제 가입→글쓰기→목록 흐름을 playwright로 캡처.

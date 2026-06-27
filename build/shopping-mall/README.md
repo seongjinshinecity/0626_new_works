@@ -73,5 +73,8 @@ src/
 └─ lib/{supabase/*, types.ts}
 ```
 
-## 스크린샷
-`docs/screenshots/products.png` (상품 목록). 장바구니 동작은 README 상단 기능표 참고.
+## 스크린샷 (가이드 제출물: 상품→담기→관리→합계)
+`docs/screenshots/`:
+- `products.png` / `products_added.png` — 상품 목록(담기 전/후, 장바구니 카운트)
+- `cart_total.png` — 장바구니: 수량 ±, 삭제, **총 금액 396,000원**(이어폰×3+키보드×1), 주문하기(준비 중)
+> 로컬 dev(`PORT=3300`)에서 실제 로그인→담기→장바구니 합계 흐름을 playwright로 캡처.
