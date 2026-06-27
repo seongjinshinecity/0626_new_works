@@ -1,8 +1,8 @@
 # 핸드오프 문서 (작업 인계 / 컨텍스트 초기화 대비)
 
-> 최종 업데이트: **2026-06-27 (5번 완성·검증 후 사용자 요청으로 작업 일시 중단)**.
+> 최종 업데이트: **2026-06-27 (6번 내 카페 에이전트 완성·검증 → 배치2 완료)**.
 > 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
-> **⏸️ 1~5번 완료, 일시 중단. 다음 재개 시 `5. 다음 할 일`의 6번(내 카페를 아는 AI 에이전트)부터.**
+> **✅ 1~6번 완료(배치1·2 끝). 다음 재개 시 `5. 다음 할 일`의 배치3(7번 자동 리서치 스킬)부터.**
 
 > **📌 이 문서 갱신 규칙 (다음 세션도 반드시 지킬 것)**
 > 사용자 지침으로 **개발 중 마일스톤마다 이 문서를 계속 갱신**한다.
@@ -23,7 +23,8 @@
 | 3 | 쇼핑몰(결제제외) | ✅ **완성·검증 통과**(상품공개/장바구니RLS/합계, 브라우저 런타임 확인) | `build/shopping-mall/` |
 | 4 | 카페 대시보드 (보스) | ✅ **완성·검증**(Auth+DB+날씨API+규칙기반 AI브리핑, 브라우저 런타임 확인) | `build/cafe-dashboard/` |
 | 5 | 가계부 분석 에이전트 (Agent+DB) | ✅ **완성·검증**(Supabase MCP read-only + 페르소나, MCP round-trip + SQL검증 Q&A) | `build/gyebu-agent/` |
-| 6~9 | 배치 2·3 (카페 에이전트/문서/자동화) | ⬜ 미착수 | — |
+| 6 | 내 카페를 아는 AI 에이전트 (Context+Agent+DB) | ✅ **완성·검증**(my_cafe.md+cafe_sales 결합, Before/After 2쌍, 컨텍스트 로드 실증) | `build/my-cafe-agent/` |
+| 7~9 | 배치 3 (자동화/문서) | ⬜ 미착수 | — |
 
 - **배포(Vercel)**: 1·2번 모두 **미배포**. 사용자 Vercel 구글 로그인이 막힘. `deploy_to_vercel` MCP는 직접 배포 못 하고 CLI를 가리킴 → **Vercel 토큰 방식 대기 중**(vercel.com/account/tokens 발급 → `vercel deploy --token`). 배포 시 Supabase env를 Vercel 프로젝트에 등록 필요.
 
@@ -60,15 +61,17 @@
 - 스크린샷: headless Chrome `--screenshot` 로 캡처(`/Applications/Google Chrome.app/.../Google Chrome --headless=new --screenshot=out.png <url>`).
 
 ## 5. 다음 할 일 (추천 순서)
-1. **6번 내 카페를 아는 AI 에이전트**: `docs/guide/my-cafe-agent.md` 읽기. `my_cafe.md` 컨텍스트 + Supabase MCP(이미 설치됨, cafe_sales 활용 가능). 5번과 같은 에이전트 패턴(페르소나 + MCP + SQL검증 DEMO). 컨텍스트(카페 컨셉) 주입이 추가 포인트.
-2. 배치 3(7~9번): 자동 리서치 스킬(Browser MCP) / 리뷰·경쟁사→엑셀·PPT(document skills) / 인스타(Playwright, 사람 로그인 필요).
-3. (보류) 1~4번 **Vercel 배포** — 사용자 Vercel 로그인이 "unknown error"로 막힘. 풀리면 토큰으로 배포.
-4. 각 단계마다 커밋·푸시 + 이 핸드오프 갱신.
+1. **배치 3 — 7번 자동 리서치 스킬**: `docs/guide/research-skill.md` 읽기. Browser MCP(claude-in-chrome, 이미 사용 중) + SKILL.md. 검증=스킬 재호출 시 동일 포맷 산출. (사람 개입 가능성 — 자동화_전체실행.md 참고)
+2. **8번 리뷰·경쟁사 → 엑셀·PPT**: `docs/guide/review-report.md`. document skills(xlsx/pptx) 활용 — 산출물 파일 생성/검증.
+3. **9번 인스타 인플루언서 찾기**: `docs/guide/instagram-influencer.md`. Playwright/Chrome MCP. **사람이 인스타 직접 로그인 필요**(키 저장 금지) → 반자동.
+4. (보류) 1~4번 **Vercel 배포** — 사용자 Vercel 로그인이 "unknown error"로 막힘. 풀리면 토큰으로 배포.
+5. 각 단계마다 커밋·푸시 + 이 핸드오프 갱신.
 
 > **배치2 메모**: 앱이 아니라 "에이전트". 산출물 = 페르소나(`.claude/agents/`) + MCP 연결 + **SQL검증 Q&A(`DEMO.md`)**. 검증 = 답의 모든 수치를 독립 SQL로 대조(순환검증 회피) + 조언이 실제 데이터 패턴 인용(맞춤성). 대화 스크린샷은 사용자 claude 세션 캡처 필요(자동 불가, DEMO transcript로 대체).
 
 ## 6. 빠른 재개 (지금 이어서 하려면)
-**마지막 작업 지점**: **1~5번 완성·검증·푸시 완료.** 재개 시 **6번(내 카페를 아는 AI 에이전트)**부터 — 5번과 같은 에이전트 패턴 재사용(`build/gyebu-agent/` 참고). (Vercel 배포는 사용자 로그인 막혀 보류. dev 서버 3100~3400은 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
+**마지막 작업 지점**: **1~6번 완성·검증·푸시 완료(배치1·2 끝).** 재개 시 **배치3 7번(자동 리서치 스킬)**부터. 배치3은 Browser/Playwright/document skills 중심이라 검증 방식이 또 다름(산출물 파일·스킬 재현성). (Vercel 배포는 사용자 로그인 막혀 보류. dev 서버 3100~3400은 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
+> **에이전트 패턴 재사용**: 5·6번 산출물 = 페르소나(`.claude/agents/`) + (5번)MCP/(6번)Read+MCP + DEMO(SQL검증 / Before·After). 새 에이전트도 이 틀.
 
 **개발 환경 재기동 명령** (작업 루트: `loop-dev-setup/`):
 ```bash
