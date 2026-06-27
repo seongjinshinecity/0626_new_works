@@ -34,6 +34,8 @@
   | 3 shopping-mall | https://shopping-mall-qudpb6fx0-seongjinshinecitys-projects.vercel.app |
   | 4 cafe-dashboard | https://cafe-dashboard-45lp497pb-seongjinshinecitys-projects.vercel.app |
   - ⚠️ **Deployment Protection(Vercel Authentication/SSO)**이 켜져 있어 현재는 소유자 로그인 시에만 열림(타인 공개 X). 공개하려면 각 프로젝트 Settings → Deployment Protection → Vercel Authentication = **Disabled**. (접근 제어 변경이라 Claude가 직접 끄지 않음 — 사용자가 대시보드에서.)
+  - ⚠️ **상태 정직 표기**: `● Ready`는 **빌드 컴파일 성공**이지 prod 런타임 동작 검증이 아님. SSO 때문에 현재 Claude가 런타임 확인 불가. (단 1번 gyebu는 `supabase.ts`가 env 없으면 빌드 throw → **빌드 Ready = env 빌드 반영 증명**. 4개 모두 동일 env 패턴.)
+  - **Protection 해제 후 1줄 검증**(사용자): `curl -s <gyebu-url>/ | grep 가계부` → 200+내용이면 빌드→렌더→Supabase 연결 전체 체인 정상(gyebu는 로그인 없어 단독 검증 가능). 2·3·4번은 로그인 후 화면으로 확인.
 
 ## 2. Supabase 환경 (중요 제약)
 무료 플랜 **활성 프로젝트 2개 한도** → **새 프로젝트 생성 불가**. 추가 앱은 기존 프로젝트에 테이블 추가로 공유한다.
