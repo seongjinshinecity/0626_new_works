@@ -1,9 +1,13 @@
 # 핸드오프 문서 (작업 인계 / 컨텍스트 초기화 대비)
 
-> 최종 업데이트: **2026-06-27 (4번 MCP 소스 보강 완료 + 폴더 Week5-1 개명 + Week5 폴더 동거)**.
+> 최종 업데이트: **2026-06-29 (UI 페이지 3종 추가 + 7개 README 스크린샷 임베드)**.
 > 이 문서는 세션이 새로 시작돼도 작업을 이어갈 수 있도록 현재 상태를 정리한다.
-> **✅ 0~9번 전부 완료(0=my_cafe.md 선행 + 1~9 퀘스트). 4번에 MCP 3번째 소스까지 추가해 가이드 제목 [Auth+MCP+DB+App] 완전 충족. 최신 커밋 `d86c1ec`.**
+> **✅ 0~9번 전부 완료 + 4번 MCP 충족 + UI 3종 추가. 최신 커밋 `bf40715`.**
+> **최근 작업(2026-06-29)**:
+> - **UI 페이지 3종** `build/ui/` — 단일 HTML(외부 의존성 0, 자기완결): ① `daily-brew.html`(데일리브루 카페 소개, my_cafe.md 기반) ② `influencer-dashboard.html`(9번 인플루언서, `@demo_*` 가상 데모 + 빨강 경고 배너) ③ `review-dashboard.html`(8번 VoC·경쟁, CSV 실집계 평균3.45·대기시간1위). 3개 서브에이전트 병렬 제작 → headless Chrome + 실제 크롬 렌더 검증. `build/ui/docs/screenshots/`에 캡처 3장.
+> - **7개 README 스크린샷 임베드**: 경로 텍스트 → `![](docs/screenshots/...)` 실제 이미지 21개(gyebu-app/community-app/shopping-mall/cafe-dashboard/research-skill/review-report/ui). GitHub에서 바로 렌더됨.
 > 남은 사용자 작업: ① 9번 인스타 **본인 로그인** 후 실후보 입력(가상 데모를 실데이터로 교체) ② Vercel Deployment Protection 해제+재배포(1~4번, 4번은 재배포해도 MCP는 로컬만·배포본 degrade) ③ 8번 엑셀/PPT를 Excel·PowerPoint로 열어 차트·표 최종 확인 ④ (선택) 5·6·9번 본인 세션 스크린샷. (0번 my_cafe.md 슬로건·분위기 보강은 ✅완료 — 가이드 형식 9항목 충족)
+> **미결(사용자 요청 중단)**: "AI 공장장 부트캠프 Notion 페이지 불러오기" — Notion MCP 미연결 + 페이지 URL 미확보로 보류. 재개하려면 **사용자가 Notion 페이지 URL 제공** 필요(공개면 WebFetch, 비공개면 본인 로그인).
 
 > **📂 폴더·저장소 구조 (중요 — 경로 바뀜)**
 > - 작업 루트가 `loop-dev-setup` → **`Week5-1/`** 로 개명됨(`/Users/hwangseongjin/Desktop/Folder Docu/Week5-1/`).
@@ -85,7 +89,7 @@
 > **배치2 메모**: 앱이 아니라 "에이전트". 산출물 = 페르소나(`.claude/agents/`) + MCP 연결 + **SQL검증 Q&A(`DEMO.md`)**. 검증 = 답의 모든 수치를 독립 SQL로 대조(순환검증 회피) + 조언이 실제 데이터 패턴 인용(맞춤성). 대화 스크린샷은 사용자 claude 세션 캡처 필요(자동 불가, DEMO transcript로 대체).
 
 ## 6. 빠른 재개 (지금 이어서 하려면)
-**마지막 작업 지점**: **0~9번 전부 완료 + 4번 MCP 보강까지 끝(최신 `d86c1ec`).** 개발 측 할 일 없음 — 남은 건 섹션5의 사용자 작업뿐. 최근 추가 메모: **4번에 MCP 3번째 소스**(`build/cafe-dashboard/mcp-server/cafe-ops-server.mjs` stdio + `src/lib/mcp-ops.ts` 클라이언트) — 성공/ degrade 경로 둘 다 로컬 런타임 스크린샷 검증(`dashboard-mcp.png`/`dashboard-mcp-degraded.png`), Vercel 서버리스는 spawn 불가. 배치3 검증 방식: 7번=스킬 재현성(`claude -p` 재호출), 8번=파일 객체 재오픈+Quick Look, 9번=가상 데모(`influencers.example.md`, 실데이터는 사용자). 2·3번 가입/글쓰기·담기/합계 스크린샷 보강됨. (dev 서버 3100~3400 떠 있을 수 있음 — 포트별 `lsof -ti:<port> | xargs kill -9`로 정리.)
+**마지막 작업 지점**: **0~9번 + 4번 MCP + UI 3종 + README 스크린샷 임베드까지 끝(최신 `bf40715`).** 개발 측 할 일 없음 — 남은 건 섹션5의 사용자 작업 + 보류된 Notion 불러오기(URL 대기). 최근 메모: **UI** `build/ui/`(3개 단일 HTML, 자기완결, 크롬 렌더 검증) / **README 이미지 임베드** 7개 21장. **4번 MCP**(`build/cafe-dashboard/mcp-server/cafe-ops-server.mjs` stdio + `src/lib/mcp-ops.ts`) 성공/degrade 둘 다 검증, Vercel 서버리스 spawn 불가. 배치3 검증: 7=스킬 재호출, 8=파일 객체+Quick Look, 9=가상 데모. (열어둔 로컬 서버: `build/ui`에서 `python3 -m http.server 8088` 떠 있을 수 있음 + dev 3100~3400 — `lsof -ti:<port> | xargs kill -9`로 정리.)
 > **에이전트 패턴 재사용**: 5·6번 산출물 = 페르소나(`.claude/agents/`) + (5번)MCP/(6번)Read+MCP + DEMO(SQL검증 / Before·After). 새 에이전트도 이 틀.
 
 **개발 환경 재기동 명령** (작업 루트: `loop-dev-setup/`):
