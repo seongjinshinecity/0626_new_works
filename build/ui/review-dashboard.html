@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데일리브루 고객 리뷰(VoC) & 경쟁 분석</title>
+<style>
+  :root{
+    --amber:#b45309; --amber-deep:#92400e; --cream:#fffbeb; --cream2:#fef3c7;
+    --red:#dc2626; --red-soft:#fee2e2; --red-deep:#991b1b;
+    --ink:#3f2d1a; --muted:#7c6650; --line:#f0e3cf;
+    --card:#ffffff; --shadow:0 8px 24px rgba(120,80,20,.10);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:linear-gradient(180deg,#fffdf6 0%,var(--cream) 100%);
+    color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:24px 20px 60px;}
+  /* Header */
+  header.hero{
+    background:linear-gradient(135deg,var(--amber) 0%,var(--amber-deep) 100%);
+    color:#fff; border-radius:22px; padding:32px 28px; box-shadow:var(--shadow);
+    position:relative; overflow:hidden;
+  }
+  header.hero:after{
+    content:"☕"; position:absolute; right:18px; bottom:-14px; font-size:120px;
+    opacity:.12; transform:rotate(-8deg);
+  }
+  .eyebrow{font-size:.8rem; letter-spacing:.18em; text-transform:uppercase; opacity:.85; margin:0 0 6px;}
+  header.hero h1{margin:0 0 6px; font-size:1.85rem; line-height:1.25;}
+  header.hero p.sub{margin:0 0 22px; opacity:.9; font-size:.95rem;}
+  .summary{display:flex; flex-wrap:wrap; gap:14px;}
+  .stat{
+    background:rgba(255,255,255,.16); backdrop-filter:blur(2px);
+    border:1px solid rgba(255,255,255,.25); border-radius:16px;
+    padding:14px 18px; min-width:140px; flex:1;
+  }
+  .stat .num{font-size:1.9rem; font-weight:800; line-height:1;}
+  .stat .lbl{font-size:.82rem; opacity:.9; margin-top:6px;}
+  .stat.neg .num{color:#ffd9d4;}
+  /* Sections */
+  section{
+    background:var(--card); border:1px solid var(--line); border-radius:20px;
+    padding:24px 24px; margin-top:22px; box-shadow:var(--shadow);
+  }
+  .sec-head{display:flex; align-items:baseline; gap:10px; margin:0 0 4px;}
+  .sec-head h2{margin:0; font-size:1.25rem; color:var(--amber-deep);}
+  .sec-head .tag{font-size:.78rem; color:var(--muted);}
+  .sec-desc{margin:2px 0 18px; color:var(--muted); font-size:.9rem;}
+  /* Rating bars */
+  .rating-row{display:flex; align-items:center; gap:12px; margin:10px 0;}
+  .rating-row .star{width:54px; font-weight:700; color:var(--amber); white-space:nowrap; font-size:.95rem;}
+  .bar-track{flex:1; background:var(--cream2); border-radius:10px; height:26px; overflow:hidden;}
+  .bar-fill{
+    height:100%; border-radius:10px; display:flex; align-items:center; justify-content:flex-end;
+    padding-right:10px; color:#fff; font-size:.8rem; font-weight:700;
+    background:linear-gradient(90deg,#f59e0b,var(--amber));
+    min-width:42px; transition:width .3s;
+  }
+  .rating-row.low .bar-fill{background:linear-gradient(90deg,#f87171,var(--red));}
+  .rating-row .cnt{width:96px; text-align:right; font-size:.85rem; color:var(--muted);}
+  /* Pivot table */
+  .pivot{display:grid; gap:12px;}
+  .pivot-row{display:grid; grid-template-columns:96px 1fr; gap:12px; align-items:center;}
+  .pivot-row .name{font-weight:700; font-size:.92rem;}
+  .stack{background:var(--cream2); border-radius:10px; height:30px; position:relative; overflow:hidden; display:flex;}
+  .stack .total{height:100%; background:linear-gradient(90deg,#fcd34d,#f59e0b); display:flex; align-items:center; padding-left:10px; color:#5a3a0c; font-size:.78rem; font-weight:700;}
+  .stack .neg{height:100%; background:repeating-linear-gradient(45deg,var(--red),var(--red) 8px,#e11d48 8px,#e11d48 16px); display:flex; align-items:center; padding:0 8px; color:#fff; font-size:.75rem; font-weight:700;}
+  .legend{display:flex; gap:18px; margin-top:14px; font-size:.82rem; color:var(--muted); flex-wrap:wrap;}
+  .legend span{display:inline-flex; align-items:center; gap:7px;}
+  .sw{width:14px; height:14px; border-radius:4px; display:inline-block;}
+  .sw.amber{background:linear-gradient(90deg,#fcd34d,#f59e0b);}
+  .sw.red{background:repeating-linear-gradient(45deg,var(--red),var(--red) 5px,#e11d48 5px,#e11d48 10px);}
+  /* Negative Top3 */
+  section.neg-zone{background:linear-gradient(180deg,#fff5f5,#fff); border-color:var(--red-soft);}
+  section.neg-zone .sec-head h2{color:var(--red-deep);}
+  .top3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:6px;}
+  .nt-card{border:1px solid var(--red-soft); border-radius:16px; padding:18px; background:#fff;}
+  .nt-card.rank1{border:2px solid var(--red); background:linear-gradient(180deg,#fff0f0,#fff); box-shadow:0 6px 18px rgba(220,38,38,.14);}
+  .nt-rank{display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; background:var(--red); color:#fff; font-weight:800; font-size:.9rem;}
+  .nt-card.rank1 .nt-rank{background:var(--red-deep); box-shadow:0 0 0 4px var(--red-soft);}
+  .nt-theme{font-size:1.15rem; font-weight:800; color:var(--red-deep); margin:10px 0 2px;}
+  .nt-count{font-size:.82rem; color:var(--muted);}
+  .nt-count b{color:var(--red); font-size:1rem;}
+  .nt-quote{margin:12px 0; padding:11px 13px; background:var(--red-soft); border-radius:10px; font-size:.86rem; color:#7f1d1d; font-style:italic;}
+  .nt-action{font-size:.84rem; color:var(--ink);}
+  .nt-action b{color:var(--amber-deep);}
+  .nt-badge{display:inline-block; background:var(--red); color:#fff; font-size:.68rem; font-weight:700; padding:3px 9px; border-radius:999px; letter-spacing:.04em; margin-bottom:4px;}
+  /* Competitor table */
+  .table-scroll{overflow-x:auto; border-radius:14px; border:1px solid var(--line);}
+  table.cmp{border-collapse:collapse; width:100%; min-width:620px; font-size:.88rem;}
+  table.cmp th,table.cmp td{padding:11px 13px; text-align:left; border-bottom:1px solid var(--line);}
+  table.cmp thead th{background:var(--cream); color:var(--amber-deep); font-size:.82rem; position:sticky; top:0;}
+  table.cmp tbody th{font-weight:700; color:var(--muted); white-space:nowrap;}
+  table.cmp col.own, table.cmp .own{background:var(--cream2);}
+  table.cmp th.own{background:var(--amber); color:#fff;}
+  table.cmp td.own{font-weight:600; color:var(--amber-deep);}
+  table.cmp tr:last-child td,table.cmp tr:last-child th{border-bottom:none;}
+  .own-tag{display:inline-block; background:#fff; color:var(--amber-deep); font-size:.62rem; font-weight:800; padding:2px 7px; border-radius:6px; margin-left:6px; vertical-align:middle;}
+  /* Strategy */
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .panel{border:1px solid var(--line); border-radius:16px; padding:18px; background:var(--cream);}
+  .panel h3{margin:0 0 12px; font-size:1rem; color:var(--amber-deep);}
+  .panel ol,.panel ul{margin:0; padding-left:20px;}
+  .panel li{margin:8px 0; font-size:.9rem;}
+  .reco-hero{
+    background:linear-gradient(135deg,var(--amber),var(--amber-deep)); color:#fff;
+    border-radius:14px; padding:16px 18px; margin-bottom:14px; box-shadow:var(--shadow);
+  }
+  .reco-hero .k{display:inline-block; background:rgba(255,255,255,.2); border-radius:999px; padding:3px 10px; font-size:.7rem; font-weight:700; margin-bottom:8px; letter-spacing:.05em;}
+  .reco-hero strong{font-size:1.02rem;}
+  .reco-hero p{margin:6px 0 0; font-size:.86rem; opacity:.94;}
+  /* Footer */
+  footer{margin-top:30px; text-align:center; color:var(--muted); font-size:.8rem; padding:18px;}
+  footer .dot{color:var(--amber);}
+  @media(max-width:760px){
+    header.hero h1{font-size:1.45rem;}
+    .top3{grid-template-columns:1fr;}
+    .grid2{grid-template-columns:1fr;}
+    .rating-row .cnt{width:80px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 1. HEADER -->
+  <header class="hero">
+    <p class="eyebrow">DAILYBREW · VoC ANALYTICS</p>
+    <h1>데일리브루 고객 리뷰(VoC) &amp; 경쟁 분석</h1>
+    <p class="sub">성수동 디저트 카페 · 네이버/카카오/구글 리뷰 기반 (집계 기간 2026-06-01 ~ 06-20)</p>
+    <div class="summary">
+      <div class="stat"><div class="num">20<span style="font-size:1rem;">건</span></div><div class="lbl">분석 리뷰 수</div></div>
+      <div class="stat"><div class="num">3.45<span style="font-size:1rem;"> / 5</span></div><div class="lbl">평균 별점 ★</div></div>
+      <div class="stat neg"><div class="num">6<span style="font-size:1rem;">건</span></div><div class="lbl">부정 리뷰 (★1~2)</div></div>
+      <div class="stat"><div class="num">대기시간</div><div class="lbl">부정 1위 테마</div></div>
+    </div>
+  </header>
+
+  <!-- 2. RATING DISTRIBUTION -->
+  <section>
+    <div class="sec-head"><h2>별점 분포</h2><span class="tag">rating 1~5 · 총 20건</span></div>
+    <p class="sec-desc">전체 평균 <b>3.45점</b>. 만족(★4~5) 11건(55%)과 불만(★1~2) 6건(30%)이 공존하는 양극 구조.</p>
+
+    <div class="rating-row">
+      <span class="star">★★★★★</span>
+      <div class="bar-track"><div class="bar-fill" style="width:100%;">7건</div></div>
+      <span class="cnt">35.0%</span>
+    </div>
+    <div class="rating-row">
+      <span class="star">★★★★</span>
+      <div class="bar-track"><div class="bar-fill" style="width:57.1%;">4건</div></div>
+      <span class="cnt">20.0%</span>
+    </div>
+    <div class="rating-row">
+      <span class="star">★★★</span>
+      <div class="bar-track"><div class="bar-fill" style="width:42.9%;">3건</div></div>
+      <span class="cnt">15.0%</span>
+    </div>
+    <div class="rating-row low">
+      <span class="star">★★</span>
+      <div class="bar-track"><div class="bar-fill" style="width:42.9%;">3건</div></div>
+      <span class="cnt">15.0%</span>
+    </div>
+    <div class="rating-row low">
+      <span class="star">★</span>
+      <div class="bar-track"><div class="bar-fill" style="width:42.9%;">3건</div></div>
+      <span class="cnt">15.0%</span>
+    </div>
+  </section>
+
+  <!-- 3. THEME PIVOT -->
+  <section>
+    <div class="sec-head"><h2>테마 피벗</h2><span class="tag">테마별 전체 vs 부정(★1~2)</span></div>
+    <p class="sec-desc">‘맛’은 6건 전부 긍정으로 핵심 강점. 반면 <b>‘대기시간’은 6건 중 3건이 부정</b>으로, 볼륨과 불만이 동시에 큰 최우선 개선 테마.</p>
+
+    <div class="pivot">
+      <div class="pivot-row"><span class="name">맛</span>
+        <div class="stack"><div class="total" style="width:100%;">전체 6건</div></div></div>
+      <div class="pivot-row"><span class="name">대기시간</span>
+        <div class="stack"><div class="total" style="width:50%;">3건</div><div class="neg" style="width:50%;">부정 3건</div></div></div>
+      <div class="pivot-row"><span class="name">친절</span>
+        <div class="stack"><div class="total" style="width:50%;">전체 3건</div></div></div>
+      <div class="pivot-row"><span class="name">분위기</span>
+        <div class="stack"><div class="total" style="width:33.3%;">2건</div></div></div>
+      <div class="pivot-row"><span class="name">가격</span>
+        <div class="stack"><div class="neg" style="width:33.3%;">부정 2건</div></div></div>
+      <div class="pivot-row"><span class="name">청결</span>
+        <div class="stack"><div class="neg" style="width:16.6%;">부정 1건</div></div></div>
+    </div>
+    <div class="legend">
+      <span><i class="sw amber"></i> 전체 건수</span>
+      <span><i class="sw red"></i> 부정 건수 (★1~2)</span>
+      <span style="margin-left:auto;">합계 20건 · 부정 6건</span>
+    </div>
+  </section>
+
+  <!-- 4. NEGATIVE TOP 3 -->
+  <section class="neg-zone">
+    <div class="sec-head"><h2>부정 리뷰 Top 3 테마</h2><span class="tag">★1~2 리뷰 6건을 테마별 집계</span></div>
+    <p class="sec-desc">불만의 절반(3/6)이 <b>‘대기시간’</b>에 집중. 주말 피크의 웨이팅이 별점 하락의 핵심 동인.</p>
+
+    <div class="top3">
+      <div class="nt-card rank1">
+        <span class="nt-badge">최우선 개선</span><br>
+        <span class="nt-rank">1</span>
+        <div class="nt-theme">대기시간</div>
+        <div class="nt-count">부정 <b>3건</b> / 부정 전체의 50%</div>
+        <div class="nt-quote">“웨이팅이 너무 길어요 한참 서서 기다리다 그냥 나왔습니다”</div>
+        <div class="nt-action"><b>개선 액션 &middot;</b> 주말 모바일 예약/픽업 도입, 좌석 회전 동선 개선, 피크타임 알림. <b>VoC 1위 이슈 직접 해소.</b></div>
+      </div>
+      <div class="nt-card">
+        <span class="nt-rank">2</span>
+        <div class="nt-theme">가격</div>
+        <div class="nt-count">부정 <b>2건</b> / 부정 전체의 33%</div>
+        <div class="nt-quote">“음료 가격이 조금 부담스러워요 디저트는 맛있음”</div>
+        <div class="nt-action"><b>개선 액션 &middot;</b> 디저트+음료 세트로 체감 가성비 강화, ‘맛+합리적 가격’ 메시지 전면화.</div>
+      </div>
+      <div class="nt-card">
+        <span class="nt-rank">3</span>
+        <div class="nt-theme">청결</div>
+        <div class="nt-count">부정 <b>1건</b> / 부정 전체의 17%</div>
+        <div class="nt-quote">“테이블 정리가 안 되어 있어서 좀 지저분했어요”</div>
+        <div class="nt-action"><b>개선 액션 &middot;</b> 피크타임 테이블 정리 주기 표준화(체크리스트) 운영.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. COMPETITOR TABLE -->
+  <section>
+    <div class="sec-head"><h2>경쟁사 비교표</h2><span class="tag">반경 500m 디저트 강점 카페 (데모 데이터)</span></div>
+    <p class="sec-desc">자사 <b>데일리브루</b>는 디저트 품질·가성비가 강점, 좌석·대기가 약점. 경쟁사 대비 포지션을 한눈에 비교.</p>
+    <div class="table-scroll">
+      <table class="cmp">
+        <colgroup><col><col class="own"><col><col><col></colgroup>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th class="own">데일리브루 <span class="own-tag">자사</span></th>
+            <th>어반로스터스</th>
+            <th>슈가힐</th>
+            <th>모닝릿</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th>콘셉트</th><td class="own">디저트 강점 동네카페</td><td>스페셜티 로스팅</td><td>비주얼 디저트 전문</td><td>브런치+카페</td></tr>
+          <tr><th>시그니처</th><td class="own">치즈케이크·크로플</td><td>싱글오리진 핸드드립</td><td>시즌 케이크</td><td>브런치 플레이트</td></tr>
+          <tr><th>객단가</th><td class="own">9,000원</td><td>12,000원</td><td>11,000원</td><td>18,000원</td></tr>
+          <tr><th>좌석</th><td class="own">24석(협소)</td><td>40석</td><td>30석</td><td>55석</td></tr>
+          <tr><th>주말 웨이팅</th><td class="own">길다(이슈)</td><td>보통</td><td>매우 길다</td><td>보통</td></tr>
+          <tr><th>SNS 강도</th><td class="own">보통</td><td>약</td><td>강(인증샷)</td><td>중</td></tr>
+          <tr><th>약점</th><td class="own">좌석·대기</td><td>디저트 약함</td><td>가격·대기</td><td>커피 평범</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="legend" style="margin-top:14px;">
+      <span><b>어반로스터스</b> — 커피 매니아층, 디저트 약함 → 자사 디저트 우위</span>
+      <span><b>슈가힐</b> — SNS 최강, 가격↑·대기 심함 → 자사 ‘맛+가성비’ 차별화</span>
+      <span><b>모닝릿</b> — 브런치·넓은 좌석 → 디저트 비경쟁</span>
+    </div>
+  </section>
+
+  <!-- 6. DIFFERENTIATION & RECOMMENDATION -->
+  <section>
+    <div class="sec-head"><h2>차별화 전략 &amp; 추천 액션</h2><span class="tag">강점 강화 · 약점 보완</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>자사 차별화 전략</h3>
+        <ol>
+          <li><b>‘맛은 슈가힐급, 가격은 합리적’</b> — 디저트 품질 호평(맛 6건 전부 긍정)을 메시지로 전면화.</li>
+          <li><b>대기시간 약점 정면 대응</b> — 주말 모바일 예약/픽업, 좌석 회전 동선 개선으로 VoC 1위 이슈 직접 해소.</li>
+          <li><b>소규모(24석)의 강점 = 큐레이션</b> — 시즌 한정 디저트로 ‘여기서만’ 경험 제공.</li>
+        </ol>
+      </div>
+      <div class="panel" style="background:#fff;">
+        <h3>추천 액션</h3>
+        <div class="reco-hero">
+          <span class="k">⭐ 우선 추천 · → 프로젝트 9</span><br>
+          <strong>로컬 인플루언서 협업</strong>
+          <p>슈가힐 대비 약한 SNS 노출을 마이크로 인플루언서로 보완. ‘맛+가성비’ 메시지를 인증샷으로 확산해 신규 유입 확대.</p>
+        </div>
+        <ul>
+          <li>주말 예약/픽업 도입으로 대기 불만 완화 → 재방문율·평점 회복.</li>
+          <li>시즌 한정 디저트 캘린더 운영으로 재방문 동기 부여.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. FOOTER -->
+  <footer>
+    데일리브루 VoC &amp; 경쟁 분석 대시보드 <span class="dot">●</span> 데이터: cafe_reviews.csv (20건) + competitors.md <span class="dot">●</span> 생성일 2026-06-29<br>
+    ※ 경쟁사 비교는 공개 정보 기반 데모 데이터입니다.
+  </footer>
+
+</div>
+</body>
+</html>

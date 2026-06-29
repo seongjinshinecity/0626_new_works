@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인스타 인플루언서 발굴 (데일리브루)</title>
+<style>
+  :root{
+    --amber:#b45309;
+    --amber-dark:#92400e;
+    --cream:#fffbeb;
+    --cream2:#fef3c7;
+    --cream3:#fde68a;
+    --ink:#451a03;
+    --muted:#78716c;
+    --line:#f3e8d2;
+    --good:#15803d;
+    --ok:#a16207;
+    --bad:#b91c1c;
+    --card-shadow:0 4px 14px rgba(180,83,9,.08), 0 1px 3px rgba(120,53,15,.06);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Apple SD Gothic Neo",sans-serif;
+    background:linear-gradient(180deg,#fffdf5 0%, #fef6e3 100%);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 20px 64px;}
+
+  /* ===== Demo banner ===== */
+  .demo-banner{
+    background:repeating-linear-gradient(45deg,#7f1d1d,#7f1d1d 18px,#991b1b 18px,#991b1b 36px);
+    color:#fff;
+    border-radius:14px;
+    padding:16px 20px;
+    margin-bottom:24px;
+    display:flex;
+    gap:14px;
+    align-items:center;
+    box-shadow:0 6px 18px rgba(127,29,29,.25);
+  }
+  .demo-banner .ico{font-size:30px;line-height:1;}
+  .demo-banner strong{font-size:1.05rem;display:block;}
+  .demo-banner span{font-size:.85rem;opacity:.92;}
+
+  /* ===== Header ===== */
+  header.hero{
+    background:linear-gradient(135deg,var(--amber) 0%, var(--amber-dark) 100%);
+    color:#fff7ed;
+    border-radius:18px;
+    padding:30px 28px;
+    margin-bottom:26px;
+    box-shadow:var(--card-shadow);
+  }
+  header.hero h1{margin:0 0 6px;font-size:1.7rem;letter-spacing:-.4px;}
+  header.hero p{margin:0;opacity:.92;font-size:.96rem;}
+  .badge-row{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;}
+  .pill{
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.25);
+    padding:5px 12px;border-radius:999px;font-size:.8rem;font-weight:600;
+  }
+
+  /* ===== Sections ===== */
+  section{margin-bottom:30px;}
+  h2{
+    font-size:1.18rem;margin:0 0 14px;display:flex;align-items:center;gap:9px;
+    color:var(--amber-dark);
+  }
+  h2 .n{
+    background:var(--amber);color:#fff;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;flex:0 0 auto;
+  }
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:16px;
+    padding:22px;box-shadow:var(--card-shadow);
+  }
+
+  /* target grid */
+  .target-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+  .tcell{background:var(--cream);border:1px solid var(--cream2);border-radius:12px;padding:14px 16px;}
+  .tcell .lab{font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:4px;text-transform:none;}
+  .tcell .val{font-size:1.02rem;font-weight:700;color:var(--ink);}
+  .tcell .sub{font-size:.78rem;color:var(--muted);margin-top:2px;}
+  .note{font-size:.85rem;color:var(--muted);margin-top:14px;}
+
+  /* formula */
+  .formula{
+    background:var(--cream);border:1px dashed var(--amber);border-radius:12px;
+    padding:18px 20px;text-align:center;font-size:1.15rem;font-weight:700;color:var(--amber-dark);
+    margin-bottom:18px;
+  }
+  .formula small{display:block;font-weight:500;color:var(--muted);font-size:.78rem;margin-top:6px;}
+  .score-table{width:100%;border-collapse:collapse;font-size:.9rem;}
+  .score-table th,.score-table td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);}
+  .score-table th{background:var(--cream);color:var(--amber-dark);font-weight:700;}
+  .score-table td:nth-child(2){font-weight:700;color:var(--amber);white-space:nowrap;}
+  .score-table tr:last-child td{border-bottom:none;}
+
+  /* candidate table */
+  .tbl-scroll{overflow-x:auto;}
+  table.cand{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;}
+  table.cand th{
+    background:var(--amber-dark);color:#fff;padding:11px 12px;text-align:left;font-weight:600;font-size:.82rem;
+    position:sticky;top:0;
+  }
+  table.cand td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  table.cand tr:nth-child(even) td{background:#fffdf6;}
+  .acct{font-weight:700;color:var(--ink);font-size:.86rem;}
+  .cat{font-size:.8rem;color:var(--muted);}
+  .bar-wrap{display:flex;align-items:center;gap:8px;min-width:150px;}
+  .bar-track{flex:1;height:9px;background:var(--cream2);border-radius:5px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#f59e0b,#b45309);}
+  .er-val{font-weight:700;font-size:.86rem;min-width:50px;}
+  .tag{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;}
+  .tag.good{background:#dcfce7;color:var(--good);}
+  .tag.ok{background:#fef9c3;color:var(--ok);}
+  .tag.bad{background:#fee2e2;color:var(--bad);}
+  .fit{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:42px;height:32px;border-radius:8px;font-weight:800;font-size:.95rem;
+    background:var(--cream2);color:var(--amber-dark);padding:0 8px;
+  }
+  .fit.top{background:var(--amber);color:#fff;}
+  tr.excluded td{opacity:.62;background:#fdf2f2 !important;}
+  tr.excluded .acct{text-decoration:line-through;}
+
+  .trap{
+    margin-top:16px;background:#fef2f2;border:1px solid #fecaca;border-left:5px solid var(--bad);
+    border-radius:10px;padding:14px 16px;
+  }
+  .trap strong{color:var(--bad);}
+  .trap .big{font-size:.92rem;}
+
+  /* top3 cards */
+  .top3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+  .ic{
+    background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:var(--card-shadow);display:flex;flex-direction:column;
+  }
+  .ic .head{padding:16px 18px;color:#fff;position:relative;}
+  .ic.rank1 .head{background:linear-gradient(135deg,#b45309,#92400e);}
+  .ic.rank2 .head{background:linear-gradient(135deg,#0f766e,#115e59);}
+  .ic.rank3 .head{background:linear-gradient(135deg,#a16207,#854d0e);}
+  .ic .rk{font-size:.75rem;font-weight:700;opacity:.9;letter-spacing:.5px;}
+  .ic .ac{font-size:1.02rem;font-weight:800;margin-top:2px;word-break:break-all;}
+  .ic .score-badge{
+    position:absolute;top:14px;right:16px;background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.35);border-radius:10px;padding:4px 10px;
+    font-weight:800;font-size:1.05rem;text-align:center;line-height:1.1;
+  }
+  .ic .score-badge small{display:block;font-size:.6rem;font-weight:600;opacity:.85;}
+  .ic .body{padding:16px 18px;flex:1;display:flex;flex-direction:column;}
+  .ic .meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
+  .ic .meta span{background:var(--cream);border:1px solid var(--cream2);border-radius:7px;padding:3px 9px;font-size:.76rem;color:var(--amber-dark);font-weight:600;}
+  .ic .reason{font-size:.86rem;color:#57534e;margin:0 0 12px;}
+  .dm{
+    background:var(--cream);border:1px solid var(--cream2);border-radius:10px;padding:12px 14px;margin-top:auto;
+  }
+  .dm .dm-lab{font-size:.72rem;font-weight:700;color:var(--amber);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+  .dm p{margin:0;font-size:.82rem;color:#44403c;font-style:italic;line-height:1.55;}
+
+  footer{
+    margin-top:14px;background:var(--cream);border:1px solid var(--cream2);border-radius:14px;
+    padding:20px 22px;font-size:.88rem;color:#57534e;
+  }
+  footer strong{color:var(--amber-dark);}
+  footer ul{margin:10px 0 0;padding-left:18px;}
+  footer li{margin-bottom:4px;}
+  .src{margin-top:14px;font-size:.74rem;color:var(--muted);text-align:center;}
+
+  @media(max-width:520px){
+    header.hero h1{font-size:1.35rem;}
+    .wrap{padding:16px 14px 48px;}
+    .card{padding:16px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Demo banner -->
+  <div class="demo-banner" role="alert">
+    <div class="ico">⚠️</div>
+    <div>
+      <strong>가상 데모 데이터 — 실존 인물 아님</strong>
+      <span>모든 @계정(@demo_*)과 수치는 워크플로우 시연용 가공 데이터입니다. 실제 발굴은 본인 인스타 로그인 후 진행하세요.</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="hero">
+    <h1>인스타 인플루언서 발굴 (데일리브루)</h1>
+    <p>성수동 수제 디저트 카페를 위한 마이크로·나노 인플루언서 점수화 → 선정 → 컨택 대시보드</p>
+    <div class="badge-row">
+      <span class="pill">☕ 성수동 디저트 카페</span>
+      <span class="pill">🎯 마이크로/나노 우선</span>
+      <span class="pill">📊 인게이지먼트율 기반</span>
+      <span class="pill">🤝 제품 시딩 협업</span>
+    </div>
+  </header>
+
+  <!-- 1. Target definition -->
+  <section>
+    <h2><span class="n">1</span>타겟 정의 (협업 제안 기준)</h2>
+    <div class="card">
+      <div class="target-grid">
+        <div class="tcell">
+          <div class="lab">카테고리</div>
+          <div class="val">카페·디저트·맛집</div>
+          <div class="sub">성수·서울 로컬 / 메뉴 적합성</div>
+        </div>
+        <div class="tcell">
+          <div class="lab">팔로워 규모</div>
+          <div class="val">1천 ~ 3만</div>
+          <div class="sub">마이크로·나노 우선 (높은 CTR·저비용)</div>
+        </div>
+        <div class="tcell">
+          <div class="lab">지역</div>
+          <div class="val">서울 · 성수/성동</div>
+          <div class="sub">실제 방문 가능성</div>
+        </div>
+        <div class="tcell">
+          <div class="lab">인게이지먼트율 기준</div>
+          <div class="val">≥ 3%</div>
+          <div class="sub">팔로워 수보다 실제 반응 우선</div>
+        </div>
+        <div class="tcell">
+          <div class="lab">콘텐츠 톤</div>
+          <div class="val">디저트 클로즈업·감성</div>
+          <div class="sub">사진/릴스 비주얼 합</div>
+        </div>
+        <div class="tcell">
+          <div class="lab">협업 형태</div>
+          <div class="val">제품 시딩 중심</div>
+          <div class="sub">무상 디저트 + 자발적 후기 (예산 제약)</div>
+        </div>
+      </div>
+      <p class="note">핵심 강점: 매장에서 <strong>직접 굽는 수제 치즈케이크·크로플</strong> (신선도·비주얼) → 사진/릴스로 잘 먹히는 디저트. 한 명 큰 협업보다 여러 마이크로에 소액·시딩 분산.</p>
+    </div>
+  </section>
+
+  <!-- 2. Engagement formula -->
+  <section>
+    <h2><span class="n">2</span>인게이지먼트율 공식 &amp; 적합도 100점 배점</h2>
+    <div class="card">
+      <div class="formula">
+        인게이지먼트율(%) = (평균 좋아요 + 평균 댓글) ÷ 팔로워 수 × 100
+        <small>최근 게시물 9~12개 평균 사용 · 3%+ 양호, 6%+ 우수</small>
+      </div>
+      <table class="score-table">
+        <thead><tr><th>항목</th><th>배점</th><th>채점 기준</th></tr></thead>
+        <tbody>
+          <tr><td>인게이지먼트율</td><td>35</td><td>6%+ = 35 / 3~6% = 25 / 1~3% = 12 / &lt;1% = 0</td></tr>
+          <tr><td>카테고리 적합</td><td>25</td><td>디저트·카페 전문 25 / 맛집 일반 15 / 로컬 일반 8</td></tr>
+          <tr><td>지역 근접</td><td>20</td><td>성수·성동 20 / 서울 12 / 그 외 3</td></tr>
+          <tr><td>콘텐츠 비주얼</td><td>10</td><td>디저트 사진 퀄리티 주관 평가</td></tr>
+          <tr><td>광고 적정성</td><td>10</td><td>협찬 비중 낮을수록 ↑</td></tr>
+        </tbody>
+      </table>
+      <p class="note">합산 점수로 Top5 선정 → 상위 3명 우선 컨택. 자동 스크래핑·자동 DM·수치 지어내기는 하지 않습니다(안전 경계).</p>
+    </div>
+  </section>
+
+  <!-- 3. Candidate Top5 table -->
+  <section>
+    <h2><span class="n">3</span>후보 Top5 (적합도 내림차순)</h2>
+    <div class="card">
+      <div class="tbl-scroll">
+        <table class="cand">
+          <thead>
+            <tr>
+              <th>@계정 (가상)</th>
+              <th>카테고리</th>
+              <th>팔로워</th>
+              <th>평균 ♥ / 💬</th>
+              <th style="min-width:170px;">인게이지먼트율</th>
+              <th>적합도</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="acct">@demo_dessert_seoul_01</div><div class="cat">성수</div></td>
+              <td class="cat">디저트 전문</td>
+              <td>8,200</td>
+              <td class="cat">540 / 31</td>
+              <td>
+                <div class="bar-wrap">
+                  <div class="bar-track"><div class="bar-fill" style="width:86%"></div></div>
+                  <span class="er-val">6.96%</span>
+                </div>
+                <span class="tag good">우수</span>
+              </td>
+              <td><span class="fit top">97</span></td>
+            </tr>
+            <tr>
+              <td><div class="acct">@demo_cafe_work_03</div><div class="cat">서울</div></td>
+              <td class="cat">카페/카공·감성</td>
+              <td>5,400</td>
+              <td class="cat">410 / 28</td>
+              <td>
+                <div class="bar-wrap">
+                  <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+                  <span class="er-val">8.11%</span>
+                </div>
+                <span class="tag good">우수</span>
+              </td>
+              <td><span class="fit top">89</span></td>
+            </tr>
+            <tr>
+              <td><div class="acct">@demo_seongsu_foodie_02</div><div class="cat">성수</div></td>
+              <td class="cat">성수 맛집</td>
+              <td>15,000</td>
+              <td class="cat">620 / 45</td>
+              <td>
+                <div class="bar-wrap">
+                  <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
+                  <span class="er-val">4.43%</span>
+                </div>
+                <span class="tag ok">양호</span>
+              </td>
+              <td><span class="fit top">75</span></td>
+            </tr>
+            <tr>
+              <td><div class="acct">@demo_seoul_eats_04</div><div class="cat">서울</div></td>
+              <td class="cat">맛집 일반</td>
+              <td>32,000</td>
+              <td class="cat">480 / 22</td>
+              <td>
+                <div class="bar-wrap">
+                  <div class="bar-track"><div class="bar-fill" style="width:19%"></div></div>
+                  <span class="er-val">1.57%</span>
+                </div>
+                <span class="tag ok">보통</span>
+              </td>
+              <td><span class="fit">52</span></td>
+            </tr>
+            <tr class="excluded">
+              <td><div class="acct">@demo_food_mega_05</div><div class="cat">그 외</div></td>
+              <td class="cat">푸드 일반</td>
+              <td>50,000</td>
+              <td class="cat">120 / 4</td>
+              <td>
+                <div class="bar-wrap">
+                  <div class="bar-track"><div class="bar-fill" style="width:3%"></div></div>
+                  <span class="er-val">0.25%</span>
+                </div>
+                <span class="tag bad">낮음</span>
+              </td>
+              <td><span class="fit">19 ❌</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="trap">
+        <p class="big" style="margin:0;">
+          <strong>⚠️ 팔로워 함정:</strong> @demo_food_mega_05는 팔로워 <strong>50,000명으로 1위</strong>지만,
+          반응률이 <strong>0.25%</strong>(가짜 팔로워 의심)에 불과해 적합도 <strong>19점으로 제외</strong>됐습니다.
+          반대로 팔로워 8,200명의 @demo_dessert_seoul_01이 6.96% 반응률로 1순위가 됐죠.
+          <strong>같은 점수 로직이 '팔로워 1위'를 떨어뜨리고 '반응 높은 후보'를 위로 올린 것</strong> — 이것이 인게이지먼트율 기반 선정의 핵심입니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Top3 cards with DM -->
+  <section>
+    <h2><span class="n">4</span>Top3 추천 &amp; 컨택 DM 초안</h2>
+    <div class="top3">
+
+      <article class="ic rank1">
+        <div class="head">
+          <div class="rk">1순위 컨택</div>
+          <div class="ac">@demo_dessert_seoul_01</div>
+          <div class="score-badge">97<small>적합도</small></div>
+        </div>
+        <div class="body">
+          <div class="meta">
+            <span>디저트 전문</span><span>성수</span><span>팔로워 8,200</span><span>ER 6.96%</span>
+          </div>
+          <p class="reason">디저트 전문·성수·반응 우수. ER 35 + 디저트 25 + 성수 20 + 비주얼 9 + 광고적정 8 = 97</p>
+          <div class="dm">
+            <div class="dm-lab">✉️ 매칭 DM — 초안 A (디저트 전문)</div>
+            <p>"최근 올리신 치즈케이크 클로즈업 릴스 잘 봤어요 — 디저트 담아내시는 감각이 저희 결과 잘 맞을 것 같아 연락드려요. 매장에서 직접 굽는 치즈케이크·크로플을 편하게 맛보시라고 초대하고 싶어요…"</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="ic rank2">
+        <div class="head">
+          <div class="rk">2순위 컨택</div>
+          <div class="ac">@demo_cafe_work_03</div>
+          <div class="score-badge">89<small>적합도</small></div>
+        </div>
+        <div class="body">
+          <div class="meta">
+            <span>카페/카공·감성</span><span>서울</span><span>팔로워 5,400</span><span>ER 8.11%</span>
+          </div>
+          <p class="reason">카공/감성·반응 최고(8.11%). ER 35 + 카페전문 25 + 서울 12 + 비주얼 9 + 광고적정 8 = 89</p>
+          <div class="dm">
+            <div class="dm-lab">✉️ 매칭 DM — 초안 C (카공·감성)</div>
+            <p>"콘센트·와이파이 갖춘 아늑한 자리에서 직접 구운 디저트와 커피 즐기실 수 있는 곳이에요. @demo_cafe_work_03님 작업/감성 콘텐츠 분위기와 잘 어울릴 것 같아 한 번 모셔서 디저트 대접하고 싶어요…"</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="ic rank3">
+        <div class="head">
+          <div class="rk">3순위 컨택</div>
+          <div class="ac">@demo_seongsu_foodie_02</div>
+          <div class="score-badge">75<small>적합도</small></div>
+        </div>
+        <div class="body">
+          <div class="meta">
+            <span>성수 맛집</span><span>성수</span><span>팔로워 15,000</span><span>ER 4.43%</span>
+          </div>
+          <p class="reason">성수 로컬 신뢰·팔로워 규모. ER 25 + 맛집 15 + 성수 20 + 비주얼 8 + 광고적정 7 = 75</p>
+          <div class="dm">
+            <div class="dm-lab">✉️ 매칭 DM — 초안 B (성수 로컬)</div>
+            <p>"성수 맛집 소개가 동네 분들께 신뢰가 두텁더라고요. 저희도 동네에서 직접 굽는 수제 디저트로 알려가는 중이라, 한 번 들러 맛보시고 자연스럽게 소개해주시면 좋겠어요. 디저트는 저희가 준비해드릴게요…"</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <strong>📌 이 대시보드는 가상 데모입니다.</strong> 위 모든 @계정과 수치는 "데이터가 들어오면 점수화 → 선정 → 컨택이 어떻게 자동으로 이어지는가"를 보여주기 위한 가공 예시이며, 실존 인플루언서가 아닙니다.
+    <strong>실제 실행 시</strong>에는 다음 절차로 가상 행을 실데이터로 교체하세요.
+    <ul>
+      <li>본인 인스타 계정으로 로그인 (비밀번호는 직접 입력 — Claude에 입력하지 않음)</li>
+      <li><code>#성수동카페 #성수디저트 #서울디저트</code> 등에서 후보를 사람이 눈으로 선별</li>
+      <li>프로필에서 팔로워·최근 9~12개 좋아요/댓글 확인 → 율 계산 → 위 점수표로 적합도 산정</li>
+      <li>Top3에 DM 초안으로 <strong>사람이 직접 1명씩 발송</strong> (자동·일괄 발송 금지)</li>
+    </ul>
+    <div class="src">데이터 출처: target.md · methodology.md · influencers.example.md · dm-drafts.md (모두 가상 데모)</div>
+  </footer>
+
+</div>
+</body>
+</html>

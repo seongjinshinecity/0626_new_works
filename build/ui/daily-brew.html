@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데일리브루 (Daily Brew) — 매일 굽는 디저트</title>
+<style>
+  :root{
+    --amber:#b45309;
+    --amber-deep:#92400e;
+    --cream:#fffbeb;
+    --butter:#fef3c7;
+    --ink:#1c1917;
+    --muted:#78716c;
+    --card:#ffffff;
+    --shadow:0 10px 30px -12px rgba(146,64,14,.28);
+    --shadow-sm:0 4px 14px -6px rgba(146,64,14,.22);
+    --radius:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    color:var(--ink);
+    background:var(--cream);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px;}
+  section{padding:84px 0;}
+  h2.heading{
+    font-size:clamp(1.6rem,3.4vw,2.3rem);
+    font-weight:800;letter-spacing:-.02em;margin-bottom:14px;
+  }
+  .lead{color:var(--muted);font-size:1.05rem;max-width:640px;}
+  .eyebrow{
+    display:inline-block;font-size:.82rem;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--amber);background:var(--butter);
+    padding:6px 14px;border-radius:999px;margin-bottom:18px;
+  }
+
+  /* HERO */
+  header.hero{
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 80% -10%, #fde68a 0%, rgba(253,230,138,0) 55%),
+      radial-gradient(110% 80% at 0% 110%, #fcd34d 0%, rgba(252,211,77,0) 50%),
+      linear-gradient(160deg,#fffbeb 0%,#fef3c7 100%);
+  }
+  .hero-inner{
+    max-width:1080px;margin:0 auto;padding:96px 22px 104px;
+    text-align:center;position:relative;z-index:2;
+  }
+  .badge-cup{font-size:3.4rem;line-height:1;filter:drop-shadow(0 8px 16px rgba(146,64,14,.2));}
+  .brand{
+    margin-top:14px;font-size:clamp(2.6rem,7vw,4.6rem);font-weight:900;
+    letter-spacing:-.03em;line-height:1.05;
+  }
+  .brand .en{
+    display:block;font-size:clamp(1rem,2.6vw,1.5rem);font-weight:700;
+    color:var(--amber);letter-spacing:.28em;text-transform:uppercase;margin-top:8px;
+  }
+  .slogan{
+    margin:24px auto 0;font-size:clamp(1.15rem,3vw,1.7rem);font-weight:700;
+    color:var(--amber-deep);max-width:620px;
+  }
+  .concept{margin:18px auto 0;max-width:600px;color:var(--muted);font-size:1.05rem;}
+  .cta-row{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+    font-weight:700;font-size:1rem;padding:14px 26px;border-radius:999px;transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .btn-primary{background:var(--amber);color:#fff;box-shadow:var(--shadow);}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 32px -12px rgba(146,64,14,.45);}
+  .btn-ghost{background:#fff;color:var(--amber-deep);border:1.5px solid #fcd34d;}
+  .btn-ghost:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+  .hero-pills{margin-top:30px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .pill{background:rgba(255,255,255,.7);border:1px solid #fde68a;color:var(--amber-deep);
+    font-size:.86rem;font-weight:600;padding:7px 14px;border-radius:999px;}
+
+  /* INTRO */
+  .intro-card{
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:46px;border:1px solid #fdeec3;
+  }
+  .intro-card p{font-size:1.12rem;color:#44403c;}
+  .intro-card p + p{margin-top:16px;}
+  .intro-card strong{color:var(--amber-deep);}
+
+  /* MENU */
+  .menu-grid{
+    margin-top:38px;display:grid;gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  }
+  .menu-card{
+    background:var(--card);border-radius:var(--radius);padding:28px 26px;
+    box-shadow:var(--shadow-sm);border:1px solid #fdeec3;transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .menu-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+  .menu-card.signature{background:linear-gradient(160deg,#fffdf7,#fef3c7);border-color:#fcd34d;}
+  .menu-emoji{font-size:2.2rem;}
+  .menu-card h3{margin:12px 0 6px;font-size:1.25rem;font-weight:800;}
+  .tag-sig{
+    display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.06em;
+    color:#fff;background:var(--amber);padding:3px 10px;border-radius:999px;margin-bottom:10px;
+  }
+  .menu-card p{color:var(--muted);font-size:.95rem;}
+  .price{margin-top:14px;font-weight:800;color:var(--amber-deep);font-size:1.05rem;}
+
+  /* AMBIENCE */
+  .ambience{
+    background:linear-gradient(160deg,#fef3c7 0%,#fffbeb 100%);
+  }
+  .feat-grid{margin-top:36px;display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+  .feat{
+    background:#fff;border-radius:18px;padding:26px;box-shadow:var(--shadow-sm);
+    border:1px solid #fdeec3;
+  }
+  .feat .ic{
+    width:48px;height:48px;border-radius:14px;background:var(--butter);
+    display:flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--amber);
+  }
+  .feat h3{font-size:1.1rem;font-weight:800;margin-bottom:6px;}
+  .feat p{color:var(--muted);font-size:.95rem;}
+
+  /* VISIT */
+  .visit-grid{margin-top:36px;display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));}
+  .visit-card{
+    background:var(--card);border-radius:var(--radius);padding:30px;
+    box-shadow:var(--shadow-sm);border:1px solid #fdeec3;
+  }
+  .visit-card .ic{font-size:1.7rem;margin-bottom:10px;display:block;}
+  .visit-card h3{font-size:1.1rem;font-weight:800;margin-bottom:8px;}
+  .visit-card p{color:#57534e;font-size:.98rem;}
+  .visit-card .big{font-size:1.15rem;font-weight:700;color:var(--ink);}
+
+  /* FOOTER */
+  footer{
+    background:var(--ink);color:#fef3c7;text-align:center;padding:56px 22px;
+  }
+  footer .fcup{font-size:2rem;}
+  footer .fslogan{font-size:1.3rem;font-weight:800;margin:14px 0 6px;color:#fde68a;}
+  footer .fmeta{color:#a8a29e;font-size:.9rem;margin-top:18px;}
+  footer .fdemo{
+    display:inline-block;margin-top:14px;font-size:.78rem;letter-spacing:.1em;
+    color:#d6d3d1;border:1px solid #44403c;padding:6px 14px;border-radius:999px;
+  }
+
+  @media(max-width:600px){
+    section{padding:60px 0;}
+    .intro-card{padding:32px 24px;}
+    .hero-inner{padding:72px 22px 80px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="badge-cup" aria-hidden="true">☕</div>
+    <h1 class="brand">데일리브루<span class="en">Daily Brew</span></h1>
+    <p class="slogan">매일 굽는 디저트, 데일리브루</p>
+    <p class="concept">동네에서 매일 직접 굽는 디저트로 알려진, 성수동 스페셜티 카페.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#visit">📍 오시는 길</a>
+      <a class="btn btn-ghost" href="#menu">🍰 시그니처 보기</a>
+    </div>
+    <div class="hero-pills">
+      <span class="pill">매장에서 직접 굽는 디저트</span>
+      <span class="pill">매일 09:00–21:00 · 연중무휴</span>
+      <span class="pill">카공 친화 · 콘센트 · 와이파이</span>
+    </div>
+  </div>
+</header>
+
+<!-- 2. 소개 -->
+<section id="about">
+  <div class="wrap">
+    <span class="eyebrow">About</span>
+    <h2 class="heading">커피보다 디저트로 기억되는 동네 카페</h2>
+    <p class="lead">디저트가 맛있는 동네 스페셜티 카페를 지향합니다.</p>
+    <div class="intro-card" style="margin-top:30px;">
+      <p>데일리브루는 <strong>매장에서 직접 굽는 수제 디저트</strong>로 알려진 성수동 골목 1층의 작은 스페셜티 카페입니다. 외부 납품 없이 매일 굽기 때문에, 갓 구운 디저트의 신선함을 그대로 만날 수 있어요.</p>
+      <p>좁지만 <strong>아늑하고 차분한 공간</strong>에서 정성껏 내린 커피 한 잔과 오늘 구운 치즈케이크를 즐겨보세요. 우드톤 인테리어와 따뜻한 조명, 디저트가 돋보이는 쇼케이스가 하루의 작은 쉼표가 되어 드립니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 시그니처 메뉴 -->
+<section id="menu" style="background:linear-gradient(180deg,#fffbeb,#fff8e6);">
+  <div class="wrap">
+    <span class="eyebrow">Signature Menu</span>
+    <h2 class="heading">매일 굽는 시그니처 디저트</h2>
+    <p class="lead">디저트 매출의 핵심, 매장에서 직접 만드는 메뉴들. 동네 카페 평균선의 합리적인 가격대로 즐기세요.</p>
+    <div class="menu-grid">
+      <div class="menu-card signature">
+        <div class="menu-emoji" aria-hidden="true">🍰</div>
+        <span class="tag-sig">SIGNATURE</span>
+        <h3>수제 치즈케이크</h3>
+        <p>매장에서 직접 구운 진한 풍미의 시그니처 디저트.</p>
+        <div class="price">3,000–6,500원</div>
+      </div>
+      <div class="menu-card signature">
+        <div class="menu-emoji" aria-hidden="true">🧇</div>
+        <span class="tag-sig">SIGNATURE</span>
+        <h3>크로플</h3>
+        <p>겉은 바삭, 속은 촉촉하게 직접 굽는 인기 디저트.</p>
+        <div class="price">3,000–6,500원</div>
+      </div>
+      <div class="menu-card">
+        <div class="menu-emoji" aria-hidden="true">☕</div>
+        <h3>커피</h3>
+        <p>아메리카노 · 카페라떼 · 바닐라라떼 · 카푸치노.</p>
+        <div class="price">4,500–5,500원</div>
+      </div>
+      <div class="menu-card">
+        <div class="menu-emoji" aria-hidden="true">🥤</div>
+        <h3>음료</h3>
+        <p>자몽에이드 · 아이스티 등 산뜻한 논커피 음료.</p>
+        <div class="price">매장 안내</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 분위기 / 공간 -->
+<section id="space" class="ambience">
+  <div class="wrap">
+    <span class="eyebrow">Atmosphere</span>
+    <h2 class="heading">좁지만 아늑한, 조용히 머무는 공간</h2>
+    <p class="lead">우드톤과 따뜻한 조명, 디저트가 돋보이는 쇼케이스 중심의 차분한 공간입니다.</p>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="ic" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h0M9 13h0M9 17h0"/></svg>
+        </div>
+        <h3>우드톤 & 따뜻한 조명</h3>
+        <p>차분하고 아늑한 인테리어로 오래 머물고 싶은 분위기.</p>
+      </div>
+      <div class="feat">
+        <div class="ic" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 20h8M12 18v2"/></svg>
+        </div>
+        <h3>카공 친화 1인석</h3>
+        <p>콘센트·와이파이 완비, 1인석 위주라 조용히 작업하기 좋아요.</p>
+      </div>
+      <div class="feat">
+        <div class="ic" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a7 7 0 0 1 14 0"/><path d="M8.5 16.5a4 4 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/></svg>
+        </div>
+        <h3>콘센트 · 와이파이 완비</h3>
+        <p>노트북 작업도 충전 걱정 없이. 카공족에게 딱 맞는 환경.</p>
+      </div>
+      <div class="feat">
+        <div class="ic" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a5 5 0 0 1 6-3"/></svg>
+        </div>
+        <h3>주말엔 활기, 평일엔 한적</h3>
+        <p>주말은 디저트 모임으로 활기차고, 평일 낮은 한산해 여유롭습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 방문 정보 -->
+<section id="visit">
+  <div class="wrap">
+    <span class="eyebrow">Visit Us</span>
+    <h2 class="heading">방문 정보</h2>
+    <p class="lead">성수동 골목에서 데일리브루를 만나보세요.</p>
+    <div class="visit-grid">
+      <div class="visit-card">
+        <span class="ic" aria-hidden="true">📍</span>
+        <h3>위치</h3>
+        <p class="big">서울 성수동 골목 1층</p>
+        <p>오피스·주거가 혼재한 동네 상권 안에 자리합니다.</p>
+      </div>
+      <div class="visit-card">
+        <span class="ic" aria-hidden="true">🕘</span>
+        <h3>영업시간</h3>
+        <p class="big">매일 09:00 – 21:00</p>
+        <p>연중무휴로 매일 문을 엽니다.</p>
+      </div>
+      <div class="visit-card">
+        <span class="ic" aria-hidden="true">💛</span>
+        <h3>이런 분께 추천</h3>
+        <p class="big">카공족 · 디저트 모임</p>
+        <p>노트북 작업이 필요한 분, 주말 디저트 모임, 그리고 점심 테이크아웃까지.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. FOOTER -->
+<footer>
+  <div class="fcup" aria-hidden="true">☕🍰</div>
+  <p class="fslogan">매일 굽는 디저트, 데일리브루</p>
+  <p>Daily Brew · 서울 성수동</p>
+  <p class="fmeta">© 데일리브루 (Daily Brew). 매일 09:00–21:00 · 연중무휴</p>
+  <span class="fdemo">데모용 소개 페이지</span>
+</footer>
+
+</body>
+</html>
