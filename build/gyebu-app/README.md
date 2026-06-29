@@ -76,7 +76,7 @@ POST 검증 규칙: `type` 은 `income`/`expense`, `amount` 는 0 이상 숫자,
 
 ## 스크린샷
 
-`docs/screenshots/` 폴더 참고 (`app.png`).
+![가계부 앱 화면](docs/screenshots/app.png)
 
 ## 폴더 구조
 

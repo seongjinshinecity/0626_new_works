@@ -77,6 +77,9 @@ src/
 ```
 
 ## 스크린샷
-- `docs/screenshots/dashboard.png` — 로그인 후 대시보드(초기).
-- `docs/screenshots/dashboard-mcp.png` — **MCP 성공 경로**: "오늘 운영 할일·발주 (MCP)" 위젯에 `via MCP · 도구: get_cafe_ops` 표기, 브리핑에 MCP 데이터 반영, footer "데이터 소스 3종". 로컬 런타임에서 실제 MCP spawn+렌더 확인.
-- `docs/screenshots/dashboard-mcp-degraded.png` — **MCP degrade 경로**: MCP 서버 부재 시 위젯만 "MCP 미연결" 표기되고 매출·날씨·인기메뉴·브리핑은 정상(안전 속성 실증).
+
+![로그인 후 대시보드(초기)](docs/screenshots/dashboard.png)
+
+![MCP 소스 통합본(via MCP 위젯)](docs/screenshots/dashboard-mcp.png)
+
+![MCP degrade 경로(위젯만 빠지고 앱 정상)](docs/screenshots/dashboard-mcp-degraded.png)

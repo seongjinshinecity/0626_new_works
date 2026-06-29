@@ -43,9 +43,10 @@ python3 -c "from pptx import Presentation; p=Presentation('out/competitor_analys
 실제 검증 결과: 엑셀 차트 3개(막대·원형·테마), PPT 슬라이드 5장·slide3 표 1개 — 확인됨.
 
 ### 실행 스크린샷 (파일 열어본 렌더)
-맥 Quick Look으로 실제 렌더한 미리보기: `docs/screenshots/`
-- `voc_analysis.xlsx.png` — 엑셀 요약 시트(평균 별점 3.45, 부정 1위=대기시간) 실제 렌더
-- `competitor_analysis.pptx.png` — PPT 표지 슬라이드 실제 렌더
+
+![엑셀 요약 시트 렌더(평균 별점 3.45, 부정 1위 대기시간)](docs/screenshots/voc_analysis.xlsx.png)
+
+![PPT 표지 슬라이드 렌더](docs/screenshots/competitor_analysis.pptx.png)
 
 > ⚠️ Quick Look은 **첫 시트/슬라이드만** 썸네일로 보여줍니다(차트가 든 '별점분포' 시트·비교표 슬라이드는 안 보임). 차트 3개·비교표 객체는 위 코드 검증(`_charts`/`has_table`)으로 확인했습니다.
 > 📌 **사용자 확인 단계**: 두 파일을 **Excel/PowerPoint(또는 Numbers/Keynote)로 한 번 열어** 차트·비교표가 화면에 그려지는지 확인해 주세요. (이 환경엔 LibreOffice가 없어 전체 슬라이드 렌더는 못 만듭니다 — 빌드 성공≠전체 렌더와 같은 맥락.)

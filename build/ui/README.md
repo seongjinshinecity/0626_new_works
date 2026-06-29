@@ -25,6 +25,14 @@ open review-dashboard.html
 ```
 렌더 스크린샷: `docs/screenshots/01_daily-brew.png`, `02_influencer.png`, `03_review.png`.
 
+## 스크린샷 미리보기
+
+![데일리브루 카페 소개 페이지](docs/screenshots/01_daily-brew.png)
+
+![인플루언서 발굴 대시보드(가상 데모 배너)](docs/screenshots/02_influencer.png)
+
+![리뷰(VoC)&경쟁 분석 대시보드](docs/screenshots/03_review.png)
+
 ## 폴더 구조
 ```
 build/ui/
